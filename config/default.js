@@ -13,21 +13,9 @@ module.exports = {
     },
     services: {
         host: 'http://localhost:3000',
+        authlogin: '/login',
+        authgrant: '/oauth/token',
         authverify: '/oauth/verify'
-    },
-    db: {
-        server: 'localhost',
-        port: 27017,
-        name: 'scratchminder',
-        options: {
-            server: {
-                maxPoolSize: 10
-            },
-            db: {
-                journal: true,
-                safe: true
-            }
-        }
     },
     log: {
         server: { // server-side logging parameters

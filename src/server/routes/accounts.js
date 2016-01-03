@@ -2,7 +2,6 @@
 var log = require('../lib/log');
 
 module.exports = [
-
     {
         method: 'get',
         uri: '/accounts',
@@ -46,7 +45,4 @@ module.exports = [
         protected: true,
         handler: (req,res,next) => {}
     }
-
-
-
 ];

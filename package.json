@@ -4,12 +4,19 @@
   "description": "web client for scratch-minder",
   "main": "main.js",
   "scripts": {
-    "watch": "watchify app.js -o src/server/content/js/bundle.js -v",
-    "browserify": "browserify app.js | uglifyjs > src/server/content/js/bundle.js",
-    "build": "npm run browserify ",
+    "build": "npm run build-js && npm run build-css",
+    "release": "npm run release-js && npm run release-css",
+    "watch": "npm run watch-js & npm run watch-css",
+    "build-css": "rework-npm src/client/css/index.css -o src/server/content/css/bundle.css",
+    "build-js": "browserify --extension=.jsx --extension=.js src/client/app.jsx > src/server/content/js/bundle.js",
+    "release-css": "rework-npm src/client/css/index.css | cleancss -o src/server/content/css/bundle.css",
+    "release-js": "browserify --extension=.jsx --extension=.js src/client/app.jsx | uglifyjs > src/server/content/js/bundle.js",
+    "watch-js": "watchify --extension=.jsx --extension=.js src/client/app.jsx -o src/server/content/js/bundle.js --debub --verbose",
+    "watch-css": "nodemon -e css --ignore src/server/content/css/bundle.css --exec 'rework-npm src/client/css/index.css -o src/server/content/css/bundle.css'",
     "start": "node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node-debug src/server/server.js",
+    "test": "node ./node_modules/mocha/bin/mocha ./tests/unit/server",
+    "test-integration": "node ./node_modules/mocha/bin/mocha ./tests/integration",
+    "debug": "node-debug main.js",
     "debug-test": "node-debug node_modules/mocha/bin/_mocha tests/unit/server-spec.js"
   },
   "repository": {
@@ -19,7 +26,9 @@
   "keywords": [
     "nodejs",
     "express",
-    "react"
+    "react",
+    "flux",
+    "jwt"
   ],
   "author": "jeff capuano",
   "license": "MIT",
@@ -31,32 +40,52 @@
     "body-parser": "^1.14.2",
     "bootstrap": "^3.3.6",
     "config": "^1.17.1",
-    "connect-mongo": "^1.1.0",
     "cookie-parser": "^1.4.0",
     "express": "^4.13.3",
-    "express-bearer-token": "^2.1.0",
-    "express-session": "^1.12.1",
+    "express-jwt": "^3.3.0",
     "flux": "^2.1.1",
+    "history": "^1.17.0",
+    "jsonwebtoken": "^5.5.0",
+    "jwt-decode": "^1.4.0",
     "lodash": "^3.10.1",
     "node-fetch": "^1.3.3",
     "react": "^0.14.5",
-    "scratch-minder-nub": "git+ssh://git@github.com:jcapuano328/scratch-minder-nub.git"
+    "react-addons-linked-state-mixin": "^0.14.5",
+    "react-dom": "^0.14.5",
+    "react-mixin": "^3.0.3",
+    "react-router": "^1.0.3",
+    "scratch-minder-nub": "git+https://github.com/jcapuano328/scratch-minder-nub.git"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
     "browserify": "^12.0.1",
     "chai": "^3.4.1",
+    "clean-css": "^3.4.8",
     "jsdom": "^7.2.2",
     "mocha": "^2.3.4",
-    "reactify": "^1.1.1",
+    "nodemon": "^1.8.1",
+    "rework": "^1.0.1",
+    "rework-npm": "^1.0.0",
+    "rework-npm-cli": "^0.1.1",
+    "sandboxed-module": "^2.0.3",
     "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0",
     "uglify-js": "^2.6.1",
     "watchify": "^3.6.1"
   },
   "browserify": {
     "transform": [
-      "reactify"
+      [
+        "babelify",
+        {
+          "presets": [
+            "react",
+            "es2015"
+          ]
+        }
+      ]
     ]
   }
 }

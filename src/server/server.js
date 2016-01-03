@@ -1,14 +1,11 @@
 'use strict'
 var config = require('config'),
     express = require('express'),
-    session = require('express-session'),
-    MongoStore = require('connect-mongo')(session),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
-    bearerToken = require('express-bearer-token'),
+    jwt = require('express-jwt'),
     path = require('path'),
     _ = require('lodash'),
-    SessionConnection = require('./lib/session-connection'),
     Router = require('./lib/router'),
     log = require('./lib/log');
 
@@ -28,30 +25,27 @@ module.exports = {
         // parse cookies
         app.use(cookieParser(config.session.secret, config.session.cookie));
         // parse auth token
-        app.use(bearerToken());
+        app.use(jwt({secret: config.session.secret, credentialsRequired: false}));
         // Set as our static content dir
         app.use('/', express.static(path.join(__dirname, 'content')));
 
-        return SessionConnection.connect()
-        .then((db) => {
-            // session
-            app.use(session(_.extend(config.session, {
-                resave: false,
-                saveUninitialized: false,
-                store: new MongoStore({db: db})
-            })));
-
-            // register routes
-            return Router.register(app)
-            .then(() => {
-                server = app.listen(port, () => {
-                    log.debug('Server started');
+        // register routes
+        return Router.register(app)
+        .then(() => {
+            return new Promise((resolve,reject) => {
+                server = app.listen(port, (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve();
                 });
             });
         })
+        .then(() => {
+            log.debug('Server started on port ' + port);
+        })
         .catch((err) => {
             log.error(err);
-            SessionConnection.disconnect().catch(() => {});
             throw err;
         });
     },
@@ -59,7 +53,6 @@ module.exports = {
         if (server) {
             log.info('Stopping Server');
             server.close(() => {
-                SessionConnection.disconnect();
                 log.debug('Server stopped');
                 server = null;
             });
