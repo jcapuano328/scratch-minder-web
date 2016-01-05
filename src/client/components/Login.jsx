@@ -1,45 +1,55 @@
 import React from 'react';
-import LinkedStateMixin from 'react-addons-linked-state-mixin';
-import ReactMixin from 'react-mixin';
+import { History } from 'react-router'
 import Auth from '../services/AuthService'
 
-export default class Login extends React.Component {
+let Login = React.createClass({
+    mixins: [ History ],
 
-  constructor() {
-    super()
-    this.state = {
-      user: '',
-      password: ''
-    };
-  }
+    getInitialState() {
+        return {
+            user: '',
+            password: ''
+        }
+    },
 
-  login(e) {
-    e.preventDefault();
-    Auth.login(this.state.user, this.state.password)
-      .catch(function(err) {
-        alert("There's an error logging in");
-        console.log("Error logging in", err);
-      });
-  }
+    login(e) {
+        e.preventDefault();
+        let user = this.refs.user.value;
+        let pass = this.refs.pass.value;
 
-  render() {
-    return (
-      <div className="login jumbotron center-block">
-        <h1>Login</h1>
-        <form role="form">
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input type="text" valueLink={this.linkState('user')} className="form-control" id="username" placeholder="Username" />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input type="password" valueLink={this.linkState('password')} className="form-control" id="password" ref="password" placeholder="Password" />
-        </div>
-        <button type="submit" className="btn btn-default" onClick={this.login.bind(this)}>Submit</button>
-      </form>
-    </div>
-    );
-  }
-}
+        Auth.login(user, password)
+        .then(() => {
+            const { location } = this.props
+            if (location.state && location.state.nextPathname) {
+                this.history.replaceState(null, location.state.nextPathname)
+            } else {
+                this.history.replaceState(null, '/')
+            }
+        })
+        .catch(function(err) {
+            alert("There's an error logging in");
+            console.log("Error logging in", err);
+        });
+    },
 
-ReactMixin(Login.prototype, LinkedStateMixin);
+    render() {
+        return (
+            <div className="login jumbotron center-block">
+                <h1>Login</h1>
+                <form role="form" onSubmit={this.login}>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input ref="user" type="text" className="form-control" id="username" placeholder="Username" />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input ref="pass" type="password" className="form-control" id="password" placeholder="Password" />
+                    </div>
+                    <button type="submit" className="btn btn-default">Submit</button>
+                </form>
+            </div>
+        );
+    }
+});
+
+module.exports = Login;

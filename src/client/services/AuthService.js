@@ -1,27 +1,53 @@
 import fetch from 'node-fetch';
 import {LOGIN_URL, SIGNUP_URL} from '../constants/LoginConstants';
-import LoginActions from '../actions/LoginActions';
 
-class AuthService {
+let handleAuth = (loginPromise) => {
+    return loginPromise
+    .then(function(response) {
+        return response.text();
+    });
+}
+
+let AuthService = {
 
     login(username, password) {
-        return this.handleAuth(fetch(LOGIN_URL, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-            })
-        }));
-    }
+        return new Promise((resolve,reject) => {
+            if (!username || !password) {
+                return reject('Invalid credentials');
+            }
+            resolve();
+        })
+        .then(() => {
+            return handleAuth(fetch(LOGIN_URL, {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                })
+            }));            
+        })
+        .then((jwt) => {
+            localStorage.setItem('jwt', jwt);
+            this.onChange(true);
+        })
+        .catch((err) => {
+            this.onChange(false);
+        });
+    },
 
     logout() {
-        LoginActions.logoutUser();
-    }
+        return new Promise((resolve,reject) => {
+            this.onChange(false);
+            localStorage.removeItem('jwt');
+            resolve();
+        });
+    },
 
+    /*
     signup(username, password, extra) {
         return this.handleAuth(fetch(SIGNUP_URL, {
             method: 'post',
@@ -35,18 +61,17 @@ class AuthService {
                 extra: extra
             })
         }));
-    }
+    },*/
 
-    handleAuth(loginPromise) {
-        return loginPromise
-        .then(function(response) {
-            return response.text();
-        })
-        .then((jwt) => {            
-            LoginActions.loginUser(jwt);
-            return true;
-        });
-    }
-}
+    getToken() {
+        return localStorage.getItem('jwt');
+    },
 
-export default new AuthService()
+    loggedIn() {
+        return !!this.getToken();
+    },
+
+    onChange() {}
+};
+
+module.exports = AuthService;
