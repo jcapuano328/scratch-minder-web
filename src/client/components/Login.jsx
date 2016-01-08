@@ -1,14 +1,25 @@
 import React from 'react';
-import { History } from 'react-router'
+//import { History } from 'react-router'
 import Auth from '../services/AuthService'
 
 let Login = React.createClass({
-    mixins: [ History ],
+    //mixins: [ History ],
+    contextTypes: {
+      router: React.PropTypes.object.isRequired
+    },
 
     getInitialState() {
         return {
             user: '',
-            password: ''
+            password: '',
+            loggedIn: Auth.loggedIn()
+        }
+    },
+
+    componentWillMount() {
+        if (this.state.loggedIn) {
+            //this.history.replaceState(null, '/home');
+            this.context.router.replace('/home');
         }
     },
 
@@ -17,14 +28,19 @@ let Login = React.createClass({
         let user = this.refs.user.value;
         let pass = this.refs.pass.value;
 
-        Auth.login(user, password)
+        Auth.login(user, pass)
         .then(() => {
+            this.context.router.replace('/home');
+            /*
             const { location } = this.props
             if (location.state && location.state.nextPathname) {
-                this.history.replaceState(null, location.state.nextPathname)
+                //this.history.replaceState(null, location.state.nextPathname)
+                browserHistory.push(location.state.nextPathname);
             } else {
-                this.history.replaceState(null, '/')
+                //this.history.replaceState(null, '/home')
+                browserHistory.push('/home');
             }
+            */
         })
         .catch(function(err) {
             alert("There's an error logging in");
