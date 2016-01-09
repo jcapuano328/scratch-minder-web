@@ -27,16 +27,6 @@ let Login = React.createClass({
         Auth.login(user, pass)
         .then(() => {
             this.history.replaceState(null, '/');
-            /*
-            const { location } = this.props
-            if (location.state && location.state.nextPathname) {
-                //this.history.replaceState(null, location.state.nextPathname)
-                browserHistory.push(location.state.nextPathname);
-            } else {
-                //this.history.replaceState(null, '/home')
-                browserHistory.push('/home');
-            }
-            */
         })
         .catch(function(err) {
             alert("There's an error logging in");

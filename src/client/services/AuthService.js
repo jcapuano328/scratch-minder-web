@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import {LOGIN_URL, SIGNUP_URL} from '../constants/LoginConstants';
+import jwtDecode from 'jwt-decode';
 
 let handleAuth = (loginPromise) => {
     return loginPromise
@@ -28,11 +29,11 @@ let AuthService = {
                     username: username,
                     password: password,
                 })
-            }));            
+            }));
         })
         .then((jwt) => {
             localStorage.setItem('jwt', jwt);
-            this.onChange(true);
+            this.onChange(true, jwtDecode(jwt));
         })
         .catch((err) => {
             this.onChange(false);
@@ -41,8 +42,8 @@ let AuthService = {
 
     logout() {
         return new Promise((resolve,reject) => {
-            this.onChange(false);
             localStorage.removeItem('jwt');
+            this.onChange(false);
             resolve();
         });
     },
@@ -67,8 +68,25 @@ let AuthService = {
         return localStorage.getItem('jwt');
     },
 
+    getUser() {
+        let token = this.getToken();
+        if (token) {
+            return jwtDecode(token);
+        }
+        return {};
+    },
+
     loggedIn() {
         return !!this.getToken();
+    },
+
+    isInRole(roles) {
+        roles = typeof roles === 'array' ? roles : [roles];
+        let user = this.getUser();
+        return roles.some((role) => {
+            let uroles = user.user.roles || [];
+            return uroles.indexOf(role) >= 0;
+        });
     },
 
     onChange() {}

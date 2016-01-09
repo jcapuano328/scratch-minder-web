@@ -8289,3 +8289,7 @@ button.close {
 }
 
 /*# sourceMappingURL=bootstrap.css.map */
+
+.hidden {
+  display: none;
+}
