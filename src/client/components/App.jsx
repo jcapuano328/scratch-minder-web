@@ -1,24 +1,26 @@
 import React from 'react'
-//import { Link } from 'react-router'
+import { Link } from 'react-router'
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import auth from '../services/AuthService';
 
 let App = React.createClass({
     getInitialState() {
         return {
-            loggedIn: auth.loggedIn()
+            loggedIn: auth.loggedIn(),
+            user: {}
         };
     },
 
     updateAuth(loggedIn) {
         this.setState({
-            loggedIn: loggedIn
+            loggedIn: loggedIn,
+            user: {}
         });
     },
 
     componentWillMount() {
         auth.onChange = this.updateAuth
-        auth.login()
+        //auth.login()
     },
 
     render() {
@@ -33,14 +35,19 @@ let App = React.createClass({
                     </Navbar.Header>
                     <Navbar.Collapse>
                       <Nav pullRight>
-                        <Navbar.Text>User</Navbar.Text>
-                        <NavDropdown eventKey={3} title="JDoe" id="basic-nav-dropdown">
-                          <MenuItem eventKey={3.1}>Accounts</MenuItem>
-                          <MenuItem divider />
-                          <MenuItem eventKey={3.2}>Profile</MenuItem>
-                          <MenuItem divider />
-                          <MenuItem eventKey={3.3}>Logout</MenuItem>
-                        </NavDropdown>
+                        {!this.state.loggedIn ? (
+                            <Link to="/login">Sign in</Link>
+                        ) : (
+                            <NavDropdown eventKey={3} title="JDoe" id="basic-nav-dropdown">
+                                <MenuItem eventKey={3.1} href='/accounts'>Accounts</MenuItem>
+                                <MenuItem divider />
+                                <MenuItem eventKey={3.2} href='/profile'>Profile</MenuItem>
+                                <MenuItem divider />
+                                <MenuItem eventKey={3.3} href='/users'>Users</MenuItem>
+                                <MenuItem divider />
+                                <MenuItem eventKey={3.4} href='/logout'>Logout</MenuItem>
+                            </NavDropdown>
+                        )}
                       </Nav>
                     </Navbar.Collapse>
                   </Navbar>

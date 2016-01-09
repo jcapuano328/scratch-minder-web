@@ -1,12 +1,9 @@
 import React from 'react';
-//import { History } from 'react-router'
+import { History } from 'react-router'
 import Auth from '../services/AuthService'
 
 let Login = React.createClass({
-    //mixins: [ History ],
-    contextTypes: {
-      router: React.PropTypes.object.isRequired
-    },
+    mixins: [ History ],
 
     getInitialState() {
         return {
@@ -18,8 +15,7 @@ let Login = React.createClass({
 
     componentWillMount() {
         if (this.state.loggedIn) {
-            //this.history.replaceState(null, '/home');
-            this.context.router.replace('/home');
+            this.history.replaceState(null, '/');
         }
     },
 
@@ -30,7 +26,7 @@ let Login = React.createClass({
 
         Auth.login(user, pass)
         .then(() => {
-            this.context.router.replace('/home');
+            this.history.replaceState(null, '/');
             /*
             const { location } = this.props
             if (location.state && location.state.nextPathname) {

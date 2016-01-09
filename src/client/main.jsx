@@ -30,18 +30,27 @@ render((
   <Route path="users" component={Users} />
 </Route>
 
+<Route path="/" component={Login}>
+    <Route path="home" component={App}>
+      <IndexRoute component={Home} />
+      <Route path="logout" component={Logout} />
+      <Route path="about" component={About} />
+      <Route path="accounts" component={Accounts} />
+      <Route path="users" component={Users} />
+    </Route>
+</Route>
+
 */
 
 render((
   <Router history={browserHistory}>
-    <Route path="/" component={Login}>
-        <Route path="home" component={App}>
-          <IndexRoute component={Home} />
-          <Route path="logout" component={Logout} />
-          <Route path="about" component={About} />
-          <Route path="accounts" component={Accounts} />
-          <Route path="users" component={Users} />
-        </Route>
-    </Route>
+      <Route path="/" component={App}>
+        <IndexRoute component={Home} />
+        <Route path="login" component={Login} />
+        <Route path="logout" component={Logout} />
+        <Route path="about" component={About} />
+        <Route path="accounts" component={Accounts} />
+        <Route path="users" component={Users} />
+      </Route>
   </Router>
 ), document.getElementById('content'));
