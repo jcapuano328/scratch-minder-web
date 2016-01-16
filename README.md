@@ -1,20 +1,26 @@
 # scratch-minder-web
 Web Client for scratch-minder
 
+### Build it
+`npm run build`
+
 ### Run it
 `npm start`
 
 ### Test it
 `npm test`
 
+### Develop it
+`npm run watch-js`
+
 ### Debug it
-`npm run-script debug`
+`npm run debug`
 
 ### Dependencies
 - express http://expressjs.com/
 - reactjs https://facebook.github.io/react/
 - flux https://facebook.github.io/flux/docs/overview.html
-- bootstrap http://getbootstrap.com/
+- material-ui http://www.material-ui.com/
 - config https://github.com/lorenwest/node-config
 
 https://nodejs.org/en/docs/es6/

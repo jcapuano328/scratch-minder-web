@@ -1,13 +1,25 @@
 import React from 'react';
-import { Link } from 'react-router';
-import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { Link, History } from 'react-router';
+import mui from 'material-ui';
 import auth from '../services/AuthService';
 
+// Get mui Components
+let ThemeManager = mui.Styles.ThemeManager;
+let AppBar = mui.AppBar
+  , LeftNav = mui.LeftNav
+  , MenuItem = mui.MenuItem
+  //, LinkMenuItem = mui.LinkMenuItem
+  , Divider = mui.Divider;
+
+
 let App = React.createClass({
+    mixins: [ History ],
+
     getInitialState() {
         return {
             loggedIn: auth.loggedIn(),
-            user: auth.getUser()
+            user: auth.getUser(),
+            navopen: false
         };
     },
 
@@ -23,37 +35,76 @@ let App = React.createClass({
         //auth.login()
     },
 
+    /*getChildContext() {
+        return {
+            muiTheme: ThemeManager.getCurrentTheme()
+        };
+    },*/
+
+    handleToggle() {
+        this.setState({open: !this.state.open});
+    },
+
+    handleClose() {
+        this.setState({open: false});
+    },
+
+    handleMenu(route) {
+        return (e,idx) => {
+            this.handleClose();
+            //this.context.router.transitionTo(route);
+            this.history.replaceState(null, route);
+        }
+    },
+
+    _onLeftNavChange(e, key, payload) {
+        // Do DOM Diff refresh
+        this.context.router.transitionTo(payload.route);
+    },
+
+    menuAppBar() {
+        return <AppBar title="Scratch Minder" onLeftIconButtonTouchTap={this.handleClose} onTitleTouchTap={this.handleClose}/>
+    },
+
     render() {
         //console.log(this.state.user.user.username);
         return (
             <div>
-                <Navbar inverse>
-                    <Navbar.Header>
-                      <Navbar.Brand>
-                        <a href="#">Scratch Minder</a>
-                      </Navbar.Brand>
-                      <Navbar.Toggle />
-                    </Navbar.Header>
-                    <Navbar.Collapse>
-                      <Nav pullRight>
-                        {!this.state.loggedIn ? (
-                            <Link to="/login">Sign in</Link>
-                        ) : (
-                            <NavDropdown eventKey={3} title={this.state.user.user.firstname} id="basic-nav-dropdown">
-                                <MenuItem eventKey={3.1} href='#/accounts'>Accounts</MenuItem>
-                                <MenuItem divider />
-                                <MenuItem eventKey={3.2} href='#/profile'>Profile</MenuItem>
-                                <MenuItem className={auth.isInRole('admin') ? 'divider' : 'hidden'} />
-                                <MenuItem eventKey={3.3} href='#/users' className={auth.isInRole('admin') ? '' : 'hidden'}>Users</MenuItem>
-                                <MenuItem divider />
-                                <MenuItem eventKey={3.4} href='#/logout'>Logout</MenuItem>
-                            </NavDropdown>
-                        )}
-                      </Nav>
-                    </Navbar.Collapse>
-                  </Navbar>
+                <header>
+                  <AppBar title='Scratch Minder' onLeftIconButtonTouchTap={this.handleToggle}>
+                      {!this.state.loggedIn ? (
+                          <LeftNav
+                              docked={false}
+                              open={this.state.open}
+                          >
+                            {this.menuAppBar()}
+                            <MenuItem onTouchTap={this.handleMenu('login')}>Sign In</MenuItem>
+                          </LeftNav>
+                      ) : (
+                          <LeftNav
+                              docked={false}
+                              open={this.state.open}
+                          >
+                              {this.menuAppBar()}
+                              <MenuItem onTouchTap={this.handleMenu('/')}>Home</MenuItem>
+                              <Divider />
+                              <MenuItem onTouchTap={this.handleMenu('/accounts')}>Accounts</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/users')}>Users</MenuItem>
+                              <Divider />
+                              <MenuItem onTouchTap={this.handleMenu('/userprofile')}>Profile</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/about')}>About</MenuItem>
+                              <Divider />
+                              <MenuItem onTouchTap={this.handleMenu('/logout')}>Logout</MenuItem>
+                          </LeftNav>
+                      )}
+
+                  </AppBar>
+                </header>
+
+                <section className="content">
                   {this.props.children}
-              </div>
+                </section>
+            </div>
         );
     }
 });
