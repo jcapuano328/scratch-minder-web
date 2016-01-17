@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, History } from 'react-router';
 import mui from 'material-ui';
+import FontAwesome from 'react-fontawesome';
 import auth from '../services/AuthService';
 var crypto = require('crypto');
+var gravataruri = 'http://www.gravatar.com/avatar/';
 
 // Get mui Components
 //let ThemeManager = mui.Styles.ThemeManager;
@@ -10,6 +12,7 @@ let AppBar = mui.AppBar,
     Avatar = mui.Avatar,
     IconMenu = mui.IconMenu,
     IconButton = mui.IconButton,
+    FontIcon = mui.FontIcon,
     LeftNav = mui.LeftNav,
     MenuItem = mui.MenuItem,
     Divider = mui.Divider;
@@ -21,8 +24,7 @@ let App = React.createClass({
     getInitialState() {
         return {
             loggedIn: auth.loggedIn(),
-            user: auth.getUser(),
-            navopen: false
+            user: auth.getUser()
         };
     },
 
@@ -31,6 +33,10 @@ let App = React.createClass({
             loggedIn: loggedIn,
             user: user
         });
+    },
+
+    componentWillUnmount() {
+        auth.onChange = () => {}
     },
 
     componentWillMount() {
@@ -59,6 +65,10 @@ let App = React.createClass({
         }
     },
 
+    handleSignIn() {
+        this.history.replaceState(null, '/login');
+    },
+
     menuAppBar() {
         return <AppBar title="Scratch Minder" onLeftIconButtonTouchTap={this.handleClose} onTitleTouchTap={this.handleClose}/>
     },
@@ -66,9 +76,12 @@ let App = React.createClass({
     render() {
         //console.log(this.state.user.user.username);
         //console.log(JSON.stringify(this.state.user));
-        var email = 'jcapuano328@gmail.com';//this.state.user.user.email;
-        var hash = crypto.createHash('md5').update(email).digest("hex");
-        var gravataruri = 'http://www.gravatar.com/avatar/' + hash;
+        var profileuri = '';
+        if (this.state.loggedIn) {
+            var email = this.state.user != null ? this.state.user.user.email : '';
+            var hash = crypto.createHash('md5').update(email).digest("hex");
+            profileuri = gravataruri + hash;
+        }
 
         return (
             <div>
@@ -77,17 +90,26 @@ let App = React.createClass({
                     onTitleTouchTap={this.handleToggle}
                     onLeftIconButtonTouchTap={this.handleToggle}
                     iconElementRight={
-                        <IconMenu
-                            iconButtonElement={
-                                <IconButton><Avatar src={gravataruri} /></IconButton>
-                            }
-                            targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                            anchorOrigin={{horizontal: 'right', vertical: 'top'}}                                    
-                        >
-                            <MenuItem onTouchTap={this.handleMenu('/userprofile')}>Profile</MenuItem>
-                            <Divider />
-                            <MenuItem onTouchTap={this.handleMenu('/logout')}>Logout</MenuItem>
-                        </IconMenu>
+                        this.state.loggedIn ? (
+                            <IconMenu
+                                iconButtonElement={
+                                    <IconButton><Avatar src={profileuri} /></IconButton>
+                                }
+                                targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+                            >
+                                <MenuItem onTouchTap={this.handleMenu('/userprofile')}>Profile</MenuItem>
+                                <Divider />
+                                <MenuItem onTouchTap={this.handleMenu('/logout')}>Sign Out</MenuItem>
+                            </IconMenu>
+                        ) : (
+                            <IconButton
+                                tooltip='Sign In'
+                                tooltipPosition='bottom-left'
+                                iconClassName='fa fa-user'
+                                onTouchTap={this.handleSignIn}
+                                />
+                        )
                     }>
                       {!this.state.loggedIn ? (
                           <LeftNav
@@ -111,7 +133,7 @@ let App = React.createClass({
                               <MenuItem onTouchTap={this.handleMenu('/userprofile')}>Profile</MenuItem>
                               <MenuItem onTouchTap={this.handleMenu('/about')}>About</MenuItem>
                               <Divider />
-                              <MenuItem onTouchTap={this.handleMenu('/logout')}>Logout</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/logout')}>Sign Out</MenuItem>
                           </LeftNav>
                       )}
 

@@ -2,6 +2,14 @@ import React from 'react';
 import { Link } from 'react-router';
 import auth from '../services/AuthService';
 
+const style = {
+  height: 500,
+  width: 500,
+  margin: 20,
+  textAlign: 'center',
+  display: 'inline-block',
+};
+
 let Home = React.createClass({
     getInitialState() {
         return {
@@ -23,7 +31,7 @@ let Home = React.createClass({
         //auth.login()
     },
     */
-    
+
     render() {
         if (this.state.loggedIn) {
             return <h1>Home</h1>
