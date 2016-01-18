@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link, History } from 'react-router';
 import auth from '../services/AuthService';
 
 const style = {
@@ -11,6 +11,8 @@ const style = {
 };
 
 let Home = React.createClass({
+    mixins: [ History ],
+
     getInitialState() {
         return {
             loggedIn: auth.loggedIn(),
@@ -32,10 +34,7 @@ let Home = React.createClass({
     },
     */
 
-    render() {
-        if (this.state.loggedIn) {
-            return <h1>Home</h1>
-        }
+    welcomeView() {
         return (
             <div>
                 <h1>Welcome!</h1>
@@ -44,6 +43,16 @@ let Home = React.createClass({
                 </p>
             </div>
         );
+    },
+
+    render() {
+        if (this.state.loggedIn) {
+            if (this.state.user && this.state.user.user && this.state.user.user.preferredAccount) {
+                this.history.replaceState(null, '/transactions');
+            }
+            return <h1>Home</h1>
+        }
+        return this.welcomeView();
     }
 });
 

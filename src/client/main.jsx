@@ -30,6 +30,7 @@ render((
         <Route path="accounts" component={Accounts}>
             <Route path="/account/:accountId" component={AccountDetail} />
         </Route>
+        <Route path="transactions" component={Transactions} />
         <Route path="users" component={Users}>
             <Route path="/user/:userId" component={UserDetail} />
         </Route>
