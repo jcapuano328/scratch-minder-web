@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import {LOGIN_URL, SIGNUP_URL} from '../constants/LoginConstants';
+import {LOGIN_URL, SIGNUP_URL} from '../constants/RESTConstants';
 import jwtDecode from 'jwt-decode';
 
 let handleAuth = (loginPromise) => {

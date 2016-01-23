@@ -16,10 +16,13 @@ describe('Auth Middleware', () => {
 		env.config = {
 			services: {
 				host: 'http://host:port',
-				authverify: '/path/to/verify'
+				auth: {
+					verify: '/path/to/verify'
+				}
 			}
 		};
 		env.req = {
+			user: {}
         };
         env.res = {
 			status: sinon.stub(),
@@ -45,7 +48,7 @@ describe('Auth Middleware', () => {
 
         describe('success', () => {
             beforeEach((done) => {
-				env.req.token = 'abc123';
+				env.req.user.token = 'abc123';
                 env.fetch.returns(Promise.accept({status: 200}));
 
                 env.handler(env.req,env.res,env.next)
@@ -54,9 +57,13 @@ describe('Auth Middleware', () => {
             });
             it('should invoke the service', () => {
                 expect(env.fetch).to.have.been.calledOnce;
-                expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authverify, sinon.match({
+                expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.verify, sinon.match({
 					method: 'POST',
-					body: {access_token: env.req.token}
+					headers: {
+		                'Accept': 'application/json',
+		                'Content-Type': 'application/json'
+		            },
+					body: JSON.stringify({access_token: env.req.user.token})
 				}));
             });
             it('should call the next middleware', () => {
@@ -91,7 +98,7 @@ describe('Auth Middleware', () => {
 
 		describe('invalid token', () => {
             beforeEach((done) => {
-				env.req.token = 'abc123';
+				env.req.user.token = 'abc123';
                 env.fetch.returns(Promise.reject({status: 401}));
 
                 env.handler(env.req,env.res,env.next)
@@ -100,9 +107,13 @@ describe('Auth Middleware', () => {
             });
             it('should invoke the service', () => {
                 expect(env.fetch).to.have.been.calledOnce;
-                expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authverify, sinon.match({
+                expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.verify, sinon.match({
 					method: 'POST',
-					body: {access_token: env.req.token}
+					headers: {
+		                'Accept': 'application/json',
+		                'Content-Type': 'application/json'
+		            },
+					body: JSON.stringify({access_token: env.req.user.token})
 				}));
             });
             it('should not call the next middleware', () => {

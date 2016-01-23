@@ -22,7 +22,7 @@ module.exports = [
                 let username = credentials.username;
                 let password = credentials.password;
                 log.trace('Authenticate User ' + username);
-                let url = config.services.host + config.services.authlogin;
+                let url = config.services.host + config.services.auth.login;
                 let body = {username: username, password: password};
                 log.trace('Post to auth services: ' + url);
                 return fetch(url, {
@@ -42,7 +42,7 @@ module.exports = [
                 })
                 .then((user) => {
                     log.trace('User ' + user.username + ' authenticated');
-                    let url = config.services.host + config.services.authgrant;
+                    let url = config.services.host + config.services.auth.grant;
                     log.trace('Post to auth services: ' + url);
                     let body = 'grant_type=password&username='+user.username+'&password='+password;
                     return fetch(url, {
@@ -85,7 +85,7 @@ module.exports = [
         uri: '/logout',
         protected: false,
         handler: (req,res,next) => {
-
+            //
             return next();
         }
     }

@@ -12,7 +12,6 @@ let AppBar = mui.AppBar,
     Avatar = mui.Avatar,
     IconMenu = mui.IconMenu,
     IconButton = mui.IconButton,
-    FontIcon = mui.FontIcon,
     LeftNav = mui.LeftNav,
     MenuItem = mui.MenuItem,
     Divider = mui.Divider;
@@ -93,7 +92,12 @@ let App = React.createClass({
                         this.state.loggedIn ? (
                             <IconMenu
                                 iconButtonElement={
-                                    <IconButton><Avatar src={profileuri} /></IconButton>
+                                    <IconButton
+                                        tooltip={this.state.user.user.firstname}
+                                        tooltipPosition='bottom-left'
+                                    >
+                                        <Avatar src={profileuri} />
+                                    </IconButton>
                                 }
                                 targetOrigin={{horizontal: 'right', vertical: 'top'}}
                                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}

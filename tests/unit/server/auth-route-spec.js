@@ -6,7 +6,7 @@ var chai = require('chai'),
     _ = require('lodash');
 chai.use(require('sinon-chai'));
 
-describe('Accounts route', () => {
+describe('Auth route', () => {
 	var env = {};
 	let response = (status, statusText, bodyjson, bodystr) => {
 		return {
@@ -34,8 +34,10 @@ describe('Accounts route', () => {
 			},
 			services: {
 				host: 'http://host:port',
-				authlogin: '/path/to/login',
-				authgrant: '/path/to/grant'
+				auth: {
+					login: '/path/to/login',
+					grant: '/path/to/grant'
+				}
 			}
 		};
 		env.req = {};
@@ -128,7 +130,7 @@ describe('Accounts route', () => {
                     .catch(done);
                 });
                 it('should invoke the login service', () => {
-                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authlogin, {
+                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.login, {
 	                    method: 'POST',
 	                    headers: {
 	                        'Accept': 'application/json',
@@ -138,7 +140,7 @@ describe('Accounts route', () => {
 	                });
                 });
 				it('should invoke the grant service', () => {
-                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authgrant, {
+                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.grant, {
 	                    method: 'POST',
 	                    headers: {
 	                        'Accept': 'application/json',
@@ -170,10 +172,10 @@ describe('Accounts route', () => {
                     .catch(done);
                 });
                 it('should not invoke the login service', () => {
-                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.authlogin);
+                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.auth.login);
                 });
 				it('should not invoke the grant service', () => {
-                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.authgrant);
+                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.auth.grant);
                 });
 				it('should not generate the jwt', () => {
 					expect(env.jwt.sign).to.not.have.been.calledOnce;
@@ -197,10 +199,10 @@ describe('Accounts route', () => {
                     .catch(done);
                 });
                 it('should not invoke the login service', () => {
-                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.authlogin);
+                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.auth.login);
                 });
 				it('should not invoke the grant service', () => {
-                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.authgrant);
+                    expect(env.fetch).to.not.have.been.calledWith(env.config.services.host + env.config.services.auth.grant);
                 });
 				it('should not generate the jwt', () => {
 					expect(env.jwt.sign).to.not.have.been.calledOnce;
@@ -226,7 +228,7 @@ describe('Accounts route', () => {
                     .catch(done);
                 });
                 it('should invoke the login service', () => {
-                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authlogin, {
+                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.login, {
 	                    method: 'POST',
 	                    headers: {
 	                        'Accept': 'application/json',
@@ -236,7 +238,7 @@ describe('Accounts route', () => {
 	                });
                 });
 				it('should not invoke the grant service', () => {
-                    expect(env.fetch).not.to.have.been.calledWith(env.config.services.host + env.config.services.authgrant);
+                    expect(env.fetch).not.to.have.been.calledWith(env.config.services.host + env.config.services.auth.grant);
                 });
 				it('should not generate the jwt', () => {
 					expect(env.jwt.sign).to.not.have.been.called;
@@ -263,7 +265,7 @@ describe('Accounts route', () => {
                     .catch(done);
                 });
                 it('should invoke the login service', () => {
-                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authlogin, {
+                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.login, {
 	                    method: 'POST',
 	                    headers: {
 	                        'Accept': 'application/json',
@@ -273,7 +275,7 @@ describe('Accounts route', () => {
 	                });
                 });
 				it('should invoke the grant service', () => {
-                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.authgrant, {
+                    expect(env.fetch).to.have.been.calledWith(env.config.services.host + env.config.services.auth.grant, {
 	                    method: 'POST',
 	                    headers: {
 	                        'Accept': 'application/json',

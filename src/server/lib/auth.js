@@ -10,21 +10,29 @@ module.exports = (restricted) => {
             return Promise.accept(true);
         }
 
-        if (!req.token) {
+        if (!req.user || !req.user.token) {
             log.error('Authentication failed: Token missing');
             res.status(401).send('Invalid credentials');
             return Promise.reject(false);
         }
+        let token = req.user.token;
 
         // validate token with service
-        log.trace('Verify Token: ' + req.token);
-        let url = config.services.host + config.services.authverify; //url.resolve(config.services.host, config.services.auth)
-        return fetch(url, {method: 'POST', body: {access_token: req.token}})
+        log.trace('Verify Token: ' + token);
+        let url = config.services.host + config.services.auth.verify; //url.resolve(config.services.host, config.services.auth.verify)
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({access_token: token})
+        })
         .then((res) => {
             if (res.status != 200) {
                 throw response.statusText;
             }
-            log.trace('Token verified: ' + req.token);
+            log.trace('Token verified: ' + token);
             next && next();
         })
         .catch((err) => {

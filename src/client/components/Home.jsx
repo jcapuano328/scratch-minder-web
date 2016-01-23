@@ -2,14 +2,6 @@ import React from 'react';
 import { Link, History } from 'react-router';
 import auth from '../services/AuthService';
 
-const style = {
-  height: 500,
-  width: 500,
-  margin: 20,
-  textAlign: 'center',
-  display: 'inline-block',
-};
-
 let Home = React.createClass({
     mixins: [ History ],
 

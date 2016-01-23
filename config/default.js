@@ -13,9 +13,21 @@ module.exports = {
     },
     services: {
         host: 'http://localhost:3000',
-        authlogin: '/login',
-        authgrant: '/oauth/token',
-        authverify: '/oauth/verify'
+        auth: {
+            login: '/login',
+            grant: '/oauth/token',
+            verify: '/oauth/verify',
+        },
+        accounts: {
+            accounts: '/user/:userid/accounts',
+            account: '/user/:userid/accounts/:id',
+            transactions: '/user/:userid/account/:accountid/transactions',
+            transaction: '/user/:userid/account/:accountid/transactions/:id'
+        },
+        users: {
+            users: '/users',
+            user: '/users/:id'
+        }
     },
     log: {
         server: { // server-side logging parameters
