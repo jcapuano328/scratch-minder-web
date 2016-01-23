@@ -1,5 +1,7 @@
 import React from 'react';
 import { Paper, Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton, Snackbar } from 'material-ui';
+import {FormattedDate,FormattedNumber} from 'react-intl';
+import Pager from './Pager';
 import auth from '../services/AuthService';
 import acctService from '../services/AccountsService';
 import transService from '../services/TransactionsService';
@@ -9,7 +11,10 @@ let Transactions = React.createClass({
         return {
             user: auth.getUser().user,
             account: '',
-            transactions: []
+            transactions: [],
+            pagingOffset: 0,
+            pagingTotal: 0,
+            pagingLimit: 5
         };
     },
     componentDidMount() {
@@ -25,9 +30,10 @@ let Transactions = React.createClass({
     },
 
     onRefresh() {
+        this.setState({transactions: []});
         return transService.get(this.state.user.preferredAccount)
         .then((transactions) => {
-            this.setState({transactions: transactions});
+            this.setState({transactions: transactions, pagingOffset: transactions.length - this.state.pagingLimit, pagingTotal: transactions.length});
         })
         .catch((err) => {
             // show the snackbar?
@@ -40,6 +46,10 @@ let Transactions = React.createClass({
     },
     onDelete() {
 
+    },
+
+    onPageClick(offset) {
+        this.setState({pagingOffset: offset});
     },
 
     render() {
@@ -55,7 +65,7 @@ let Transactions = React.createClass({
                 <form>
                     <Toolbar>
                         <ToolbarGroup float="left">
-                             <ToolbarTitle text={this.state.account.toString()} />
+                             <ToolbarTitle text={'Account ' + this.state.account.toString()} />
                         </ToolbarGroup>
                         <ToolbarGroup float="right">
                             <ToolbarTitle text="Actions" />
@@ -83,7 +93,7 @@ let Transactions = React.createClass({
                         </ToolbarGroup>
                     </Toolbar>
                     <Table>
-                        <TableHeader>
+                        <TableHeader enableSelectAll={true}>
                             <TableRow>
                                 <TableHeaderColumn tooltip="Transaction Date">Date</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="Transaction ID">ID</TableHeaderColumn>
@@ -96,8 +106,9 @@ let Transactions = React.createClass({
                         </TableHeader>
                         <TableBody
                             stripedRows={true}>
-                            {(this.state.transactions || []).map(this.makeTransaction)}
+                            {(this.state.transactions || []).slice(this.state.pagingOffset, this.state.pagingOffset+this.state.pagingLimit).map(this.makeTransaction)}
                         </TableBody>
+                        <Pager offset={this.state.pagingOffset} total={this.state.pagingTotal} limit={this.state.pagingLimit} onPageClick={this.onPageClick}/>
                     </Table>
                 </form>
 
@@ -106,15 +117,17 @@ let Transactions = React.createClass({
     },
 
     makeTransaction(transaction) {
+        let amount = (<FormattedNumber value={transaction.amount} format="USD" />);
+        let balance = (<FormattedNumber value={0} format="USD" />);
         return (
             <TableRow key={transaction.transactionid}>
-                <TableRowColumn>{transaction.when}</TableRowColumn>
+                <TableRowColumn><FormattedDate value={transaction.when} /></TableRowColumn>
                 <TableRowColumn>{transaction.sequence}</TableRowColumn>
                 <TableRowColumn>{transaction.description}</TableRowColumn>
                 <TableRowColumn>{transaction.category}</TableRowColumn>
-                <TableRowColumn>{transaction.type == 'credit' || transaction.type == 'set' ? transaction.amount : ''}</TableRowColumn>
-                <TableRowColumn>{transaction.type == 'debit' ? transaction.amount : ''}</TableRowColumn>
-                <TableRowColumn>Balance!</TableRowColumn>
+                <TableRowColumn>{transaction.type == 'credit' || transaction.type == 'set' ? amount : ''}</TableRowColumn>
+                <TableRowColumn>{transaction.type == 'debit' ? amount : ''}</TableRowColumn>
+                <TableRowColumn>{balance}</TableRowColumn>
             </TableRow>
         );
     }
