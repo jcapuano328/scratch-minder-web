@@ -45,7 +45,7 @@ module.exports = [
         uri: '/accounts/:id',
         protected: true,
         handler: (req,res,next) => {
-            console.dir(req.user.user);
+            //console.dir(req.user.user);
             log.info('Fetching account ' + req.params.id + ' for ' + req.user.user.username);
             let pattern = new UrlPattern(config.services.accounts.account);
             let url = config.services.host + pattern.stringify({userid: req.user.user.userid, id: req.params.id});
@@ -75,76 +75,6 @@ module.exports = [
             });
         }
     },
-    {
-        method: 'get',
-        uri: '/accounts/:id/transactions',
-        protected: true,
-        handler: (req,res,next) => {
-            log.info('Fetching transactions for ' + req.user.user.username + ' account ' + req.params.id);
-            let pattern = new UrlPattern(config.services.accounts.transactions);
-            let url = config.services.host + pattern.stringify({userid: req.user.user.userid, accountid: req.params.id});
-            log.debug('GET ' + url);
-            return fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + req.user.token
-                }
-            })
-            .then((response) => {
-                //log.trace(response.status);
-                if (response.status != 200) {
-                    throw {status: response.status, message: response.statusText};
-                }
-                return response.json();
-            })
-            .then((transactions) => {
-                transactions = transactions || [];
-                log.trace(transactions.length + ' transactions retrieved');
-                res.status(200).send(transactions);
-            })
-            .catch((err) => {
-                log.error('Transactions retrieval for ' + req.user.user.username + ' failed. ' + err.status + ' ' + err.message);
-                return res.status(err.status || 400).send(err.message || err);
-            });
-        }
-    },
-    {
-        method: 'get',
-        uri: '/accounts/:id/transactions/:transid',
-        protected: true,
-        handler: (req,res,next) => {
-            log.info('Fetching transactions for ' + req.user.user.username + ' account ' + req.params.id);
-            let pattern = new UrlPattern(config.services.accounts.transaction);
-            let url = config.services.host + pattern.stringify({userid: req.user.user.userid, accountid: req.params.id, id: req.params.transid});
-            log.debug('GET ' + url);
-            return fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + req.user.token
-                }
-            })
-            .then((response) => {
-                //log.trace(response.status);
-                if (response.status != 200) {
-                    throw {status: response.status, message: response.statusText};
-                }
-                return response.json();
-            })
-            .then((transaction) => {
-                log.trace('Transaction retrieved');
-                res.status(200).send(transaction);
-            })
-            .catch((err) => {
-                log.error('Transaction retrieval for ' + req.user.user.username + ' failed. ' + err.status + ' ' + err.message);
-                return res.status(err.status || 400).send(err.message || err);
-            });
-        }
-    },
-
     {
         method: 'post',
         uri: '/accounts',

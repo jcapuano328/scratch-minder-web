@@ -1,5 +1,4 @@
-// footer.jsx
-
+//https://github.com/callemall/material-ui/issues/1511
 import React from 'react';
 import {TableFooter as TF, TableRow, TableRowColumn, FontIcon, IconButton} from 'material-ui';
 
@@ -26,7 +25,7 @@ const TableFooter = React.createClass({
   render() {
     let offset = this.props.offset;
     let total = this.props.total;
-    let limit = this.props.limit;    
+    let limit = this.props.limit;
     return (
       <TF adjustForCheckbox={false}>
         <TableRow>

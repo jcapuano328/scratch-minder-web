@@ -1,11 +1,13 @@
 import fetch from 'node-fetch';
 import auth from '../services/AuthService';
-import {ACCOUNTS_URL, ACCOUNT_URL} from '../constants/RESTConstants';
+import UrlPattern from 'url-pattern';
+import {BASE_URL, ACCOUNTS_URL, ACCOUNT_URL} from '../constants/RESTConstants';
 
 let AccountsService = {
     get(accountid) {
         let token = auth.getToken();
-        let url = !!accountid ? ACCOUNT_URL.replace(':id', accountid) : ACCOUNTS_URL;
+        let pattern = new UrlPattern(!!accountid ? ACCOUNT_URL : ACCOUNTS_URL);
+        let url = BASE_URL + pattern.stringify({id: accountid});
         return fetch(url, {
             method: 'get',
             headers: {

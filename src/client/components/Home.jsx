@@ -40,7 +40,7 @@ let Home = React.createClass({
     render() {
         if (this.state.loggedIn) {
             if (this.state.user && this.state.user.user && this.state.user.user.preferredAccount) {
-                this.history.replaceState(null, '/transactions');
+                this.history.replaceState(null, '/account/' + this.state.user.user.preferredAccount + '/transactions');
             }
             return <h1>Home</h1>
         }

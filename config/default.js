@@ -20,7 +20,9 @@ module.exports = {
         },
         accounts: {
             accounts: '/user/:userid/accounts',
-            account: '/user/:userid/accounts/:id',
+            account: '/user/:userid/accounts/:id'
+        },
+        transactions: {
             transactions: '/user/:userid/account/:accountid/transactions',
             transaction: '/user/:userid/account/:accountid/transactions/:id'
         },

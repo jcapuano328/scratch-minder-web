@@ -17,11 +17,21 @@ describe('Accounts route', () => {
 		env.config = {
 			services: {
 				host: 'http://host:port',
-				transactions: '/path/to/login'
+				accounts: {
+					accounts: '/users/:userid/path/to/accounts',
+					account: '/users/:userid/path/to/account/:id'
+				}
 			}
 		};
 
-		env.req = {};
+		env.req = {
+			user: {
+				user: {
+					userid: 'user123'
+				},
+				token: 'token987'
+			}
+		};
         env.res = {
 			status: sinon.stub(),
             send: sinon.stub()
@@ -40,9 +50,9 @@ describe('Accounts route', () => {
     });
 
     describe('interface', () => {
-        it('should have a 7 routes', () => {
+        it('should have a 5 routes', () => {
             expect(env.routes).to.be.an.array;
-            expect(env.routes).to.have.length(7);
+            expect(env.routes).to.have.length(5);
         });
         describe('get all accounts', () => {
             beforeEach(() => {
@@ -78,43 +88,9 @@ describe('Accounts route', () => {
                 expect(env.route).to.respondTo('handler');
             });
         });
-        describe('get transactions for an account', () => {
-            beforeEach(() => {
-                env.route = env.routes[2];
-            });
-            it('should have a method', () => {
-                expect(env.route).to.have.property('method', 'get');
-            });
-            it('should have a uri', () => {
-                expect(env.route).to.have.property('uri', '/accounts/:id/transactions');
-            });
-            it('should be protected', () => {
-                expect(env.route).to.have.property('protected', true);
-            });
-            it('should have a handler', () => {
-                expect(env.route).to.respondTo('handler');
-            });
-        });
-        describe('get a transaction', () => {
-            beforeEach(() => {
-                env.route = env.routes[3];
-            });
-            it('should have a method', () => {
-                expect(env.route).to.have.property('method', 'get');
-            });
-            it('should have a uri', () => {
-                expect(env.route).to.have.property('uri', '/accounts/:id/transactions/:transid');
-            });
-            it('should be protected', () => {
-                expect(env.route).to.have.property('protected', true);
-            });
-            it('should have a handler', () => {
-                expect(env.route).to.respondTo('handler');
-            });
-        });
         describe('create account', () => {
             beforeEach(() => {
-                env.route = env.routes[4];
+                env.route = env.routes[2];
             });
             it('should have a method', () => {
                 expect(env.route).to.have.property('method', 'post');
@@ -131,7 +107,7 @@ describe('Accounts route', () => {
         });
         describe('update account', () => {
             beforeEach(() => {
-                env.route = env.routes[5];
+                env.route = env.routes[3];
             });
             it('should have a method', () => {
                 expect(env.route).to.have.property('method', 'put');
@@ -148,7 +124,7 @@ describe('Accounts route', () => {
         });
 		describe('delete account', () => {
             beforeEach(() => {
-                env.route = env.routes[6];
+                env.route = env.routes[4];
             });
             it('should have a method', () => {
                 expect(env.route).to.have.property('method', 'delete');
@@ -163,54 +139,119 @@ describe('Accounts route', () => {
                 expect(env.route).to.respondTo('handler');
             });
         });
-    });
+	});
 
 	describe('handlers', () => {
-		describe('transactions', () => {
-			beforeEach(() => {
-				env.transactions = [
-					{
-					    "transactionid": '1',
-					    "accountid": 'abc123',
-					    "type": 'debit',
-					    "sequence": '3257',
-					    "category": 'Household',
-					    "description": 'Piggly Wiggly',
-					    "amount": 56.98,
-					    "when": new Date()
-					},
-					{
-					    "transactionid": '3',
-					    "accountid": 'abc123',
+		beforeEach(() => {
+			env.accounts = [
+				{
+					"accountid": 'abc123',
+					"number": '44444',
+					"name": 'ipsom lorem',
+					"sequence": '5986',
+					"lastActivity": {
+						"transactionid": 'def456',
+						"type": "debit",
+						"sequence": '5900',
+						"category": 'Household',
+						"description": 'Piggly Wiggly',
+						"amount": 89.56,
+						"when": new Date(),
+						"balance": 5963.36
+					}
+				},
+				{
+					"accountid": 'abc456',
+					"number": '98709788',
+					"name": 'off shore savings',
+					"sequence": '9999',
+					"lastActivity": {
+						"transactionid": '3',
 					    "type": 'debit',
 					    "sequence": '3258',
 					    "category": 'Taxes',
 					    "description": 'IRS',
 					    "amount": 2589.85,
-					    "when": new Date()
+					    "when": new Date(),
+						"balance": 5963.36
 					}
+				}
+			];
+		});
 
-				];
+		describe('get all', () => {
+			beforeEach(() => {
+				env.handler = env.routes[0].handler;
 			});
-			describe('get', () => {
-				beforeEach(() => {
-					env.handler = env.routes[2].handler;
+
+			describe('success', () => {
+				beforeEach((done) => {
+					env.fetch.returns(Promise.accept(env.response(200, 'OK', env.accounts)));
+                    env.handler(env.req,env.res,env.next)
+                    .then(() => {done();})
+                    .catch(done);
 				});
 
-				describe('success', () => {
-					beforeEach((done) => {
-						env.fetch.onFirstCall().returns(Promise.accept(env.response(200, 'OK', env.transactions)));
-						env.jwt.sign.yields(env.token);
-	                    env.handler(env.req,env.res,env.next)
-	                    .then(() => {done();})
-	                    .catch(done);
-
+				it('should call the service', () => {
+					expect(env.fetch).to.have.been.calledOnce;
+					expect(env.fetch).to.have.been.calledWith('http://host:port/users/user123/path/to/accounts', {
+						method: 'GET',
+						headers: {
+		                    'Accept': 'application/json',
+		                    'Content-Type': 'application/json',
+		                    'Authorization': 'Bearer ' + env.req.user.token
+		                }
 					});
 				});
 
+				it('should return 200', () => {
+					expect(env.res.status).to.have.been.calledOnce;
+					expect(env.res.status).to.have.been.calledWith(200);
+				});
+				it('should return the data', () => {
+					expect(env.res.send).to.have.been.calledOnce;
+					expect(env.res.send).to.have.been.calledWith(env.accounts);
+				});
 			});
-
 		});
 
+		describe('get', () => {
+			beforeEach(() => {
+				env.handler = env.routes[1].handler;
+			});
+
+			describe('success', () => {
+				beforeEach((done) => {
+					env.req.params = {
+						id: 'account123'
+					};
+					env.fetch.returns(Promise.accept(env.response(200, 'OK', env.accounts[0])));
+                    env.handler(env.req,env.res,env.next)
+                    .then(() => {done();})
+                    .catch(done);
+				});
+
+				it('should call the service', () => {
+					expect(env.fetch).to.have.been.calledOnce;
+					expect(env.fetch).to.have.been.calledWith('http://host:port/users/user123/path/to/account/account123', {
+						method: 'GET',
+						headers: {
+		                    'Accept': 'application/json',
+		                    'Content-Type': 'application/json',
+		                    'Authorization': 'Bearer ' + env.req.user.token
+		                }
+					});
+				});
+
+				it('should return 200', () => {
+					expect(env.res.status).to.have.been.calledOnce;
+					expect(env.res.status).to.have.been.calledWith(200);
+				});
+				it('should return the data', () => {
+					expect(env.res.send).to.have.been.calledOnce;
+					expect(env.res.send).to.have.been.calledWith(env.accounts[0]);
+				});
+			});
+		});
 	});
 });

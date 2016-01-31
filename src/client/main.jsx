@@ -15,6 +15,7 @@ import About from './components/About';
 import Accounts from './components/Accounts';
 import AccountDetail from './components/AccountDetail';
 import Transactions from './components/Transactions';
+import TransactionDetail from './components/TransactionDetail';
 import Users from './components/Users';
 import UserDetail from './components/UserDetail';
 import UserProfile from './components/UserProfile';
@@ -32,7 +33,7 @@ let intlData = {
         "date": {
             "day": "numeric",
             "month": "numeric",
-            "year": "numeric"            
+            "year": "numeric"
         },
         "number": {
             "USD": {
@@ -56,13 +57,12 @@ render((
             <Route path="logout" component={Logout} />
             <Route path="about" component={About} />
             <Route path="userprofile" component={UserProfile} />
-            <Route path="accounts" component={Accounts}>
-                <Route path="/account/:accountId" component={AccountDetail} />
-            </Route>
-            <Route path="transactions" component={Transactions} />
-            <Route path="users" component={Users}>
-                <Route path="/user/:userId" component={UserDetail} />
-            </Route>
+            <Route path="accounts" component={Accounts}/>
+            <Route path="accounts/account/:accountId" component={AccountDetail} />
+            <Route path="account/:accountid/transactions" component={Transactions}/>
+            <Route path="account/:accountid/transactions/transaction/:transactionId" component={TransactionDetail} />
+            <Route path="users" component={Users}/>
+            <Route path="users/user/:userId" component={UserDetail} />
           </Route>
       </Router>
     </IntlProvider>
