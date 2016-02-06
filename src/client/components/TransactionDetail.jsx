@@ -2,8 +2,8 @@ import React from 'react';
 import { History } from 'react-router'
 import { Paper, DatePicker, SelectField, MenuItem, TextField, IconButton, FlatButton, Snackbar,
          Toolbar, ToolbarGroup, ToolbarTitle  } from 'material-ui';
- import acctService from '../services/AccountsService';
- import transService from '../services/TransactionsService';
+import acctService from '../services/AccountsService';
+import transService from '../services/TransactionsService';
 
 
 let TransactionDetail = React.createClass({

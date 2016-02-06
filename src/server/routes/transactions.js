@@ -150,12 +150,12 @@ module.exports = [
         uri: '/accounts/:accountid/transactions/:id',
         protected: true,
         handler: (req,res,next) => {
-            log.info('Removing account ' + req.params.id + ' for ' + req.user.user.username);
+            log.info('Removing transaction ' + req.params.id + ' for ' + req.user.user.username);
             let pattern = new UrlPattern(config.services.transactions.transaction);
             let url = config.services.host + pattern.stringify({userid: req.user.user.userid, accountid: req.params.accountid, id: req.params.id});
-            log.debug('DEL ' + url);
+            log.debug('DELETE ' + url);
             return fetch(url, {
-                method: 'DEL',
+                method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -169,9 +169,9 @@ module.exports = [
                 }
                 return response.json();
             })
-            .then((account) => {
+            .then((transaction) => {
                 log.trace('Transaction removed');
-                res.status(200).send(account);
+                res.status(200).send(transaction);
             })
             .catch((err) => {
                 log.error('Transaction removal for ' + req.user.user.username + ' failed. ' + err.status + ' ' + err.message);

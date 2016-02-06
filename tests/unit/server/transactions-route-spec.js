@@ -6,7 +6,7 @@ var chai = require('chai'),
     _ = require('lodash');
 chai.use(require('sinon-chai'));
 
-describe('Accounts route', () => {
+describe('Transactions route', () => {
 	var env = {};
 	beforeEach(() => {
 		env = {};
@@ -283,6 +283,84 @@ describe('Accounts route', () => {
 				it('should return the data', () => {
 					expect(env.res.send).to.have.been.calledOnce;
 					expect(env.res.send).to.have.been.calledWith(env.transactions[0]);
+				});
+			});
+		});
+
+		describe('put', () => {
+			beforeEach(() => {
+				env.handler = env.routes[3].handler;
+			});
+
+			describe('success', () => {
+				beforeEach((done) => {
+					env.req.params = {
+						accountid: 'abc123',
+						id: 'trans345'
+					};
+					env.req.body = env.transactions[0];
+					env.fetch.returns(Promise.accept(env.response(200, 'OK', env.transactions[0])));
+					env.handler(env.req,env.res,env.next)
+					.then(() => {done();})
+					.catch(done);
+				});
+
+				it('should call the service', () => {
+					expect(env.fetch).to.have.been.calledOnce;
+					expect(env.fetch).to.have.been.calledWith('http://host:port/users/user123/path/to/account/abc123/transactions/trans345', {
+						method: 'PUT',
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json',
+							'Authorization': 'Bearer ' + env.req.user.token
+						},
+						body: JSON.stringify(env.transactions[0])
+					});
+				});
+
+				it('should return 200', () => {
+					expect(env.res.status).to.have.been.calledOnce;
+					expect(env.res.status).to.have.been.calledWith(200);
+				});
+				it('should return the data', () => {
+					expect(env.res.send).to.have.been.calledOnce;
+					expect(env.res.send).to.have.been.calledWith(env.transactions[0]);
+				});
+			});
+		});
+
+		describe('delete', () => {
+			beforeEach(() => {
+				env.handler = env.routes[4].handler;
+			});
+
+			describe('success', () => {
+				beforeEach((done) => {
+					env.req.params = {
+						accountid: 'abc123',
+						id: 'trans345'
+					};
+					env.fetch.returns(Promise.accept(env.response(200, 'OK', null)));
+					env.handler(env.req,env.res,env.next)
+					.then(() => {done();})
+					.catch(done);
+				});
+
+				it('should call the service', () => {
+					expect(env.fetch).to.have.been.calledOnce;
+					expect(env.fetch).to.have.been.calledWith('http://host:port/users/user123/path/to/account/abc123/transactions/trans345', {
+						method: 'DELETE',
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json',
+							'Authorization': 'Bearer ' + env.req.user.token
+						}
+					});
+				});
+
+				it('should return 200', () => {
+					expect(env.res.status).to.have.been.calledOnce;
+					expect(env.res.status).to.have.been.calledWith(200);
 				});
 			});
 		});

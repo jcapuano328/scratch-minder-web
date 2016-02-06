@@ -64,6 +64,25 @@ let TransactionsService = {
             }
             return response.json();
         });
+    },
+    remove(accountid, transaction) {
+        let token = auth.getToken();
+        let pattern = new UrlPattern(TRANSACTION_URL);
+        let url = BASE_URL + pattern.stringify({id: accountid, transactionid: transaction.transactionid});
+        return fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        })
+        .then(function(response) {
+            if (response.status != 200) {
+                throw {status: response.status, message: response.statusText};
+            }
+            return response.json();
+        });
     }
 };
 

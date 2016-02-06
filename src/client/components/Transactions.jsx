@@ -1,11 +1,13 @@
 import React from 'react';
 import { History } from 'react-router'
-import { Paper, DatePicker, Snackbar, TextField,
+import { Paper, Snackbar, TextField, DatePicker,
         Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn,
-        Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton
+        Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton,
+        Card, CardHeader
         } from 'material-ui';
 import {FormattedDate,FormattedNumber} from 'react-intl';
 import Pager from './Pager';
+import ConfirmDialog from './ConfirmDialog';
 import acctService from '../services/AccountsService';
 import transService from '../services/TransactionsService';
 
@@ -19,7 +21,8 @@ let Transactions = React.createClass({
             pagingOffset: 0,
             pagingTotal: 0,
             pagingLimit: 5,
-            selectedTransaction: null
+            selectedTransaction: null,
+            showConfirm: false
         };
     },
     componentDidMount() {
@@ -55,11 +58,13 @@ let Transactions = React.createClass({
     },
     onEdit() {
         if (this.state.selectedTransaction != null) {
-            this.history.pushState(null, '/account/' + this.props.params.accountid + '/transactions/transaction/' + this.state.selectedTransaction);
+            this.history.pushState(null, '/account/' + this.props.params.accountid + '/transactions/transaction/' + this.state.selectedTransaction.transactionid);
         }
     },
     onDelete() {
-        console.log('delete');
+        if (this.state.selectedTransaction != null) {
+            this.setState({showConfirm: true});
+        }
     },
 
     onPageClick(offset) {
@@ -67,7 +72,7 @@ let Transactions = React.createClass({
     },
 
     onRowSelect(selectedRows) {
-        let transaction = (selectedRows.length > 0) ? this.state.transactions[selectedRows[0]+this.state.pagingOffset].transactionid : null;
+        let transaction = (selectedRows.length > 0) ? this.state.transactions[selectedRows[0]+this.state.pagingOffset] : null;
         this.setState({selectedTransaction: transaction});
     },
 
@@ -134,6 +139,30 @@ let Transactions = React.createClass({
                         <Pager offset={this.state.pagingOffset} total={this.state.pagingTotal} limit={this.state.pagingLimit} onPageClick={this.onPageClick}/>
                     </Table>
                 </form>
+                <ConfirmDialog ref="confirmDlg" open={this.state.showConfirm} title={'Delete Transaction?'}
+                    prompt={this.confirmPrompt(this.state.selectedTransaction)}
+                    onOk={() => {
+                        transService.remove(this.props.params.accountid, this.state.selectedTransaction)
+                        .then(() => {
+                            let transactions = this.state.transactions;
+                            transactions.splice(transactions.indexOf(this.state.selectedTransaction), 1);
+                            this.setState({
+                                selectedTransaction: null,
+                                transactions: transactions,
+                                pagingTotal: transactions.length,
+                                showConfirm: false
+                            });
+                        })
+                        .catch((err) => {
+                            // show the snackbar?
+                            console.error(err);
+                            this.setState({showConfirm: false});
+                        });
+                    }}
+                    onCancel={() => {
+                        this.setState({showConfirm: false});
+                    }}
+                />
             </Paper>
         );
     },
@@ -142,7 +171,7 @@ let Transactions = React.createClass({
         let amount = (<FormattedNumber value={transaction.amount} format="USD" />);
         return (
             <TableRow key={transaction.transactionid}
-                selected={!!this.state.selectedTransaction && this.state.selectedTransaction==transaction.transactionid}>
+                selected={!!this.state.selectedTransaction && this.state.selectedTransaction.transactionid==transaction.transactionid}>
                 <TableRowColumn><FormattedDate value={transaction.when} /></TableRowColumn>
                 <TableRowColumn>{transaction.sequence}</TableRowColumn>
                 <TableRowColumn>{transaction.description}</TableRowColumn>
@@ -151,6 +180,43 @@ let Transactions = React.createClass({
                 <TableRowColumn>{transaction.type == 'debit' ? amount : ''}</TableRowColumn>
                 <TableRowColumn><FormattedNumber value={transaction.balance} format="USD" /></TableRowColumn>
             </TableRow>
+        );
+    },
+
+    confirmPrompt(transaction) {
+        if (!transaction) {
+            return (<div/>);
+        }
+
+        let types = {
+            debit: 'Debit',
+            credit: 'Credit',
+            set: 'Set Balance'
+        };
+
+        return (
+            <Table>
+                <TableHeader displaySelectAll={false} enableSelectAll={false} adjustForCheckbox={false}>
+                    <TableRow>
+                        <TableHeaderColumn tooltip="Date">Date</TableHeaderColumn>
+                        <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
+                        <TableHeaderColumn tooltip="Name">Name</TableHeaderColumn>
+                        <TableHeaderColumn tooltip="Category">Category</TableHeaderColumn>
+                        <TableHeaderColumn tooltip="Amount">{types[transaction.type]}</TableHeaderColumn>
+                        <TableHeaderColumn tooltip="Balance">Balance</TableHeaderColumn>
+                    </TableRow>
+                </TableHeader>
+                <TableBody displayRowCheckbox={false}>
+                    <TableRow key={transaction.transactionid}>
+                        <TableRowColumn><FormattedDate value={transaction.when} /></TableRowColumn>
+                        <TableRowColumn>{transaction.sequence}</TableRowColumn>
+                        <TableRowColumn>{transaction.description}</TableRowColumn>
+                        <TableRowColumn>{transaction.category}</TableRowColumn>
+                        <TableRowColumn><FormattedNumber value={transaction.amount} format="USD" /></TableRowColumn>
+                        <TableRowColumn><FormattedNumber value={transaction.balance} format="USD" /></TableRowColumn>
+                    </TableRow>
+                </TableBody>
+            </Table>
         );
     }
 });
