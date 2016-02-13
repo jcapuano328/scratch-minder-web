@@ -54,7 +54,7 @@ let Transactions = React.createClass({
     },
 
     onAdd() {
-        console.log('add');
+        this.history.pushState(null, '/account/' + this.props.params.accountid + '/transactions/transaction/new');
     },
     onEdit() {
         if (this.state.selectedTransaction != null) {
@@ -144,6 +144,7 @@ let Transactions = React.createClass({
                     onOk={() => {
                         transService.remove(this.props.params.accountid, this.state.selectedTransaction)
                         .then(() => {
+                            /*
                             let transactions = this.state.transactions;
                             transactions.splice(transactions.indexOf(this.state.selectedTransaction), 1);
                             this.setState({
@@ -152,6 +153,12 @@ let Transactions = React.createClass({
                                 pagingTotal: transactions.length,
                                 showConfirm: false
                             });
+                            */
+                            this.setState({
+                                selectedTransaction: null,
+                                showConfirm: false
+                            });
+                            this.onRefresh();
                         })
                         .catch((err) => {
                             // show the snackbar?

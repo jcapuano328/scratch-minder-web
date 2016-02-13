@@ -2,9 +2,14 @@ import React from 'react';
 import { History } from 'react-router'
 import { Paper, DatePicker, SelectField, MenuItem, TextField, IconButton, FlatButton, Snackbar,
          Toolbar, ToolbarGroup, ToolbarTitle  } from 'material-ui';
+import {FormattedNumber} from 'react-intl';
 import acctService from '../services/AccountsService';
 import transService from '../services/TransactionsService';
 
+//float: 'left',
+let firstItemStyle = {};//{marginLeft: '10%'};
+let itemStyle = {};//{marginLeft: '10px'};
+let balanceStyle = {};//{float: 'right', margin: '1.5em auto'};
 
 let TransactionDetail = React.createClass({
     mixins: [ History ],
@@ -18,7 +23,8 @@ let TransactionDetail = React.createClass({
             description: null,
             category: null,
             type: null,
-            amount: null
+            amount: null,
+            balance: 0
         };
     },
 
@@ -36,6 +42,7 @@ let TransactionDetail = React.createClass({
                     category: transaction.category,
                     type: transaction.type,
                     amount: transaction.amount,
+                    balance: transaction.balance,
                     transaction: transaction
                 });
             });
@@ -82,7 +89,8 @@ let TransactionDetail = React.createClass({
         })
         .catch((err) => {
             console.error(err);
-            this.history.goBack();
+            // show the snack bar?
+            //this.history.goBack();
         });
     },
     onCancel(e) {
@@ -106,7 +114,13 @@ let TransactionDetail = React.createClass({
                 <form>
                     <Toolbar>
                         <ToolbarGroup float="left">
-                             <ToolbarTitle text={'Account ' + this.state.account} />
+                             <ToolbarTitle text={'Account ' + this.state.account}/>
+                        </ToolbarGroup>
+                        <ToolbarGroup float="left" style={{top: '32%', left: '20%', color: 'green'}}>
+                             <FormattedNumber
+                                 floatingLabelText='Balance'
+                                 hintText='Current balance'
+                                 value={this.state.balance} format="USD" />
                         </ToolbarGroup>
                         <ToolbarGroup float="right">
                             <IconButton
@@ -126,43 +140,49 @@ let TransactionDetail = React.createClass({
                     <div style={{textAlign: 'center'}}>
                         <div>
                             <DatePicker value={new Date(this.state.when)} autoOk={true}
+                                style={firstItemStyle}
                                 floatingLabelText="Date"
                                 hintText='Date of transaction'
                                 onChange={this.onChangeDate} />
                         </div>
                         <div>
                             <SelectField value={this.state.type}
-                              onChange={this.onChangeType}
-                              floatingLabelText="Type"
-                              hintText='Type of transaction'>
-                              <MenuItem value={'debit'} primaryText="Debit"/>
-                              <MenuItem value={'credit'} primaryText="Credit"/>
-                              <MenuItem value={'set'} primaryText="Set Balance"/>
+                                style={itemStyle}
+                                onChange={this.onChangeType}
+                                floatingLabelText="Type"
+                                hintText='Type of transaction'>
+                                <MenuItem value={'debit'} primaryText="Debit"/>
+                                <MenuItem value={'credit'} primaryText="Credit"/>
+                                <MenuItem value={'set'} primaryText="Set Balance"/>
                             </SelectField>
                         </div>
                         <div>
                             <TextField value={this.state.sequence}
-                              onChange={this.onChangeSequence}
-                              floatingLabelText="Sequence"
-                              hintText='Next number in sequence'/>
+                                style={firstItemStyle}
+                                onChange={this.onChangeSequence}
+                                floatingLabelText="Sequence"
+                                hintText='Next number in sequence'/>
                         </div>
                         <div>
                             <TextField value={this.state.description}
-                              onChange={this.onChangeDescription}
-                              floatingLabelText="Description"
-                              hintText='Description of transaction'/>
+                                style={itemStyle}
+                                onChange={this.onChangeDescription}
+                                floatingLabelText="Description"
+                                hintText='Description of transaction'/>
                         </div>
                         <div>
                             <TextField value={this.state.category}
-                              onChange={this.onChangeCategory}
-                              floatingLabelText="Category"
-                              hintText='Category of transaction'/>
+                                style={itemStyle}
+                                onChange={this.onChangeCategory}
+                                floatingLabelText="Category"
+                                hintText='Category of transaction'/>
                         </div>
                         <div style={{marginBottom: 25}}>
                             <TextField value={this.state.amount}
-                              onChange={this.onChangeAmount}
-                              floatingLabelText="Amount"
-                              hintText='Transaction amount'/>
+                                style={itemStyle}
+                                onChange={this.onChangeAmount}
+                                floatingLabelText="Amount"
+                                hintText='Transaction amount'/>
                         </div>
                     </div>
                 </form>
