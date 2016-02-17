@@ -48,7 +48,7 @@ let Accounts = React.createClass({
     },
     onEdit() {
         if (this.state.selectedAccount != null) {
-            this.history.pushState(null, '/account/account/' + this.state.selectedAccount.accountid);
+            this.history.pushState(null, '/accounts/account/' + this.state.selectedAccount.accountid);
         }
     },
     onDelete() {

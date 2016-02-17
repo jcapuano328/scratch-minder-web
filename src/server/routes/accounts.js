@@ -153,9 +153,9 @@ module.exports = [
             log.info('Removing account ' + req.params.id + ' for ' + req.user.user.username);
             let pattern = new UrlPattern(config.services.accounts.account);
             let url = config.services.host + pattern.stringify({userid: req.user.user.userid, id: req.params.id});
-            log.debug('DEL ' + url);
+            log.debug('DELETE ' + url);
             return fetch(url, {
-                method: 'DEL',
+                method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',

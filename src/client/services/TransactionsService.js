@@ -44,11 +44,11 @@ let TransactionsService = {
             return response.json();
         });
     },
-    save(accountid, transaction) {
+    save(accountid, transaction, isnew) {
         let token = auth.getToken();
-        let pattern = new UrlPattern(!transaction.transactionid ? TRANSACTIONS_URL: TRANSACTION_URL);
+        let pattern = new UrlPattern(isnew ? TRANSACTIONS_URL: TRANSACTION_URL);
         let url = BASE_URL + pattern.stringify({id: accountid, transactionid: transaction.transactionid});
-        let method = !transaction.transactionid ? 'post' : 'put';
+        let method = isnew ? 'post' : 'put';
         return fetch(url, {
             method: method,
             headers: {

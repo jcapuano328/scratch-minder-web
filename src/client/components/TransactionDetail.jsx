@@ -24,7 +24,8 @@ let TransactionDetail = React.createClass({
             category: null,
             type: null,
             amount: null,
-            balance: 0
+            balance: 0,
+            isnew: (this.props.params.transactionId == 'new')
         };
     },
 
@@ -83,7 +84,7 @@ let TransactionDetail = React.createClass({
         this.state.transaction.type = this.state.type;
         this.state.transaction.amount = this.state.amount;
 
-        transService.save(this.props.params.accountid,this.state.transaction)
+        transService.save(this.props.params.accountid,this.state.transaction,this.state.isnew)
         .then(() => {
             this.history.goBack();
         })
