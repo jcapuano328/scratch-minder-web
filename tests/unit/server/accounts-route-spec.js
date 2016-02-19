@@ -149,32 +149,14 @@ describe('Accounts route', () => {
 					"number": '44444',
 					"name": 'ipsom lorem',
 					"sequence": '5986',
-					"lastActivity": {
-						"transactionid": 'def456',
-						"type": "debit",
-						"sequence": '5900',
-						"category": 'Household',
-						"description": 'Piggly Wiggly',
-						"amount": 89.56,
-						"when": new Date(),
-						"balance": 5963.36
-					}
+					"balance": 5963.36
 				},
 				{
 					"accountid": 'abc456',
 					"number": '98709788',
 					"name": 'off shore savings',
 					"sequence": '9999',
-					"lastActivity": {
-						"transactionid": '3',
-					    "type": 'debit',
-					    "sequence": '3258',
-					    "category": 'Taxes',
-					    "description": 'IRS',
-					    "amount": 2589.85,
-					    "when": new Date(),
-						"balance": 5963.36
-					}
+					"balance": 5963.36
 				}
 			];
 		});

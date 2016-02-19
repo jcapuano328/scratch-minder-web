@@ -158,7 +158,7 @@ let Accounts = React.createClass({
                 <TableRowColumn>{account.name}</TableRowColumn>
                 <TableRowColumn>{account.number}</TableRowColumn>
                 <TableRowColumn>{account.sequence}</TableRowColumn>
-                <TableRowColumn><FormattedNumber value={account.lastActivity.balance} format="USD" /></TableRowColumn>
+                <TableRowColumn><FormattedNumber value={account.balance} format="USD" /></TableRowColumn>
             </TableRow>
         );
     },
@@ -181,7 +181,7 @@ let Accounts = React.createClass({
                         <TableRow key={account.accountid}>
                         <TableRowColumn>{account.name}</TableRowColumn>
                         <TableRowColumn>{account.number}</TableRowColumn>
-                        <TableRowColumn><FormattedNumber value={account.lastActivity.balance} format="USD" /></TableRowColumn>
+                        <TableRowColumn><FormattedNumber value={account.balance} format="USD" /></TableRowColumn>
                     </TableRow>
                 </TableBody>
             </Table>

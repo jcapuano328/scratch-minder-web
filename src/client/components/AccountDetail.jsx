@@ -25,7 +25,7 @@ let AccountDetail = React.createClass({
                 name: account.name,
                 number: account.number,
                 sequence: account.sequence,
-                balance: account.lastActivity.balance || 0,
+                balance: account.balance || 0,
                 account: account
             });
         })
@@ -54,7 +54,7 @@ let AccountDetail = React.createClass({
         this.state.account.name = this.state.name;
         this.state.account.number = this.state.number;
         this.state.account.sequence = this.state.sequence;
-        this.state.account.lastActivity.balance = this.state.balance;
+        this.state.account.balance = this.state.balance;
 
         acctService.save(this.state.account,this.state.isnew)
         .then(() => {
