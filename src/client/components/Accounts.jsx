@@ -1,20 +1,22 @@
 import React from 'react';
 import { History } from 'react-router'
-import { Paper, Snackbar, TextField, DatePicker,
+import { Paper, Snackbar, TextField, Toggle,
         Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn,
-        Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton,
-        Card, CardHeader
+        Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, IconButton
         } from 'material-ui';
 import {FormattedDate,FormattedNumber} from 'react-intl';
 import Pager from './Pager';
 import ConfirmDialog from './ConfirmDialog';
+import auth from '../services/AuthService';
 import acctService from '../services/AccountsService';
+import usersService from '../services/UsersService';
 
 let Accounts = React.createClass({
     mixins: [ History ],
 
     getInitialState() {
         return {
+            user: null,
             accounts: [],
             pagingOffset: 0,
             pagingTotal: 0,
@@ -29,12 +31,17 @@ let Accounts = React.createClass({
 
     onRefresh() {
         this.setState({accounts: []});
-        return acctService.getAll()
-        .then((accounts) => {
-            this.setState({
-                accounts: accounts,
-                pagingOffset: 0,//accounts.length - this.state.pagingLimit,
-                pagingTotal: accounts.length
+        let usr = auth.getUser().user;
+        return usersService.get(usr.userid)
+        .then((user) => {
+            return acctService.getAll()
+            .then((accounts) => {
+                this.setState({
+                    user: user,
+                    accounts: accounts,
+                    pagingOffset: 0,//accounts.length - this.state.pagingLimit,
+                    pagingTotal: accounts.length
+                });
             });
         })
         .catch((err) => {
@@ -64,6 +71,22 @@ let Accounts = React.createClass({
     onRowSelect(selectedRows) {
         let account = (selectedRows.length > 0) ? this.state.accounts[selectedRows[0]+this.state.pagingOffset] : null;
         this.setState({selectedAccount: account});
+    },
+
+    onPreferredSelected(row) {
+        return (e, selected) => {
+            let preferredAccount = this.state.user.preferredAccount;
+            this.state.user.preferredAccount = selected ? this.state.accounts[row].accountid : null;
+            usersService.save(this.state.user)
+            .then(() => {
+                this.setState({user: this.state.user});
+            })
+            .catch((err) => {
+                // show the error?
+                this.state.user.preferredAccount = preferredAccount;
+                this.setState({user: this.state.user});
+            });
+        };
     },
 
     render() {
@@ -118,6 +141,7 @@ let Accounts = React.createClass({
                                 <TableHeaderColumn tooltip="Account Number">Number</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="Account Sequence">Sequence</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="Account Balance">Balance</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Preferred Account">Preferred</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
                         <TableBody stripedRows={true} displayRowCheckbox={true} deselectOnClickaway={false}>
@@ -159,6 +183,7 @@ let Accounts = React.createClass({
                 <TableRowColumn>{account.number}</TableRowColumn>
                 <TableRowColumn>{account.sequence}</TableRowColumn>
                 <TableRowColumn><FormattedNumber value={account.balance} format="USD" /></TableRowColumn>
+                <TableRowColumn><Toggle defaultToggled={account.accountid==this.state.user.preferredAccount} onToggle={this.onPreferredSelected(i)}/></TableRowColumn>
             </TableRow>
         );
     },

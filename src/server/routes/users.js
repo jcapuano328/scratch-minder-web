@@ -17,7 +17,8 @@ module.exports = [
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
                 }
             })
             .then((response) => {
@@ -51,7 +52,8 @@ module.exports = [
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
                 }
             })
             .then((response) => {
@@ -83,7 +85,8 @@ module.exports = [
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
                 },
                 body: JSON.stringify(req.body)
             })
@@ -117,7 +120,8 @@ module.exports = [
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
                 },
                 body: JSON.stringify(req.body)
             })
@@ -146,12 +150,13 @@ module.exports = [
             log.info('Removing user ' + req.params.id);
             let pattern = new UrlPattern(config.services.users.user);
             let url = config.services.host + pattern.stringify({id: req.params.id});
-            log.debug('DEL ' + url);
+            log.debug('DELETE ' + url);
             return fetch(url, {
-                method: 'DEL',
+                method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
                 }
             })
             .then((response) => {

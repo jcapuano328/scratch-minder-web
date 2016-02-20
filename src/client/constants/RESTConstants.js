@@ -5,6 +5,8 @@ module.exports = {
   LOGIN_URL: BASE_URL + '/login',
   SIGNUP_URL: BASE_URL + '/users',
   LOGOUT_URL: BASE_URL + '/logout',
+  USERS_URL: '/users',
+  USER_URL:'/users/:id',  
   ACCOUNTS_URL: '/accounts',
   ACCOUNT_URL:'/accounts/:id',
   TRANSACTIONS_URL: '/accounts/:id/transactions',

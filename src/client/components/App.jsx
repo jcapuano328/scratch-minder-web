@@ -23,7 +23,7 @@ let App = React.createClass({
     getInitialState() {
         return {
             loggedIn: auth.loggedIn(),
-            user: auth.getUser()
+            user: auth.getUser().user
         };
     },
 
@@ -73,11 +73,11 @@ let App = React.createClass({
     },
 
     render() {
-        //console.log(this.state.user.user.username);
+        //console.log(this.state.user.username);
         //console.log(JSON.stringify(this.state.user));
         var profileuri = '';
         if (this.state.loggedIn) {
-            var email = this.state.user != null ? this.state.user.user.email : '';
+            var email = this.state.user != null ? this.state.user.email : '';
             var hash = crypto.createHash('md5').update(email).digest("hex");
             profileuri = gravataruri + hash;
         }
@@ -93,7 +93,7 @@ let App = React.createClass({
                             <IconMenu
                                 iconButtonElement={
                                     <IconButton
-                                        tooltip={this.state.user.user.firstname}
+                                        tooltip={this.state.user.firstname}
                                         tooltipPosition='bottom-left'
                                     >
                                         <Avatar src={profileuri} />

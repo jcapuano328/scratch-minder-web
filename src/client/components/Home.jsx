@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, History } from 'react-router';
 import auth from '../services/AuthService';
+import userService from '../services/UsersService';
 
 let Home = React.createClass({
     mixins: [ History ],
@@ -8,7 +9,7 @@ let Home = React.createClass({
     getInitialState() {
         return {
             loggedIn: auth.loggedIn(),
-            user: auth.getUser()
+            user: null
         };
     },
 
@@ -19,12 +20,19 @@ let Home = React.createClass({
             user: user
         });
     },
-
-    componentWillMount() {
-        auth.onChange = this.updateAuth
-        //auth.login()
-    },
     */
+    componentWillMount() {
+        if (loggedIn) {
+            let usr = auth.getUser().user;
+            return usersService.get(usr.userid)
+            .then((user) => {
+                this.setState({user: user});
+            })
+            .catch((err) => {
+
+            });
+        }
+    },
 
     welcomeView() {
         return (
@@ -39,8 +47,8 @@ let Home = React.createClass({
 
     render() {
         if (this.state.loggedIn) {
-            if (this.state.user && this.state.user.user && this.state.user.user.preferredAccount) {
-                this.history.replaceState(null, '/account/' + this.state.user.user.preferredAccount + '/transactions');
+            if (this.state.user && this.state.user.preferredAccount) {
+                this.history.replaceState(null, '/account/' + this.state.user.preferredAccount + '/transactions');
             }
             return <h1>Home</h1>
         }
