@@ -30,7 +30,7 @@ let App = React.createClass({
     updateAuth(loggedIn, user) {
         this.setState({
             loggedIn: loggedIn,
-            user: user
+            user: user.user
         });
     },
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, History } from 'react-router';
 import auth from '../services/AuthService';
-import userService from '../services/UsersService';
+import usersService from '../services/UsersService';
 
 let Home = React.createClass({
     mixins: [ History ],
@@ -22,7 +22,7 @@ let Home = React.createClass({
     },
     */
     componentWillMount() {
-        if (loggedIn) {
+        if (this.state.loggedIn) {
             let usr = auth.getUser().user;
             return usersService.get(usr.userid)
             .then((user) => {

@@ -16,7 +16,7 @@ let Transactions = React.createClass({
 
     getInitialState() {
         return {
-            account: '',
+            account: {name: '', number: ''},
             transactions: [],
             pagingOffset: 0,
             pagingTotal: 0,
@@ -28,7 +28,7 @@ let Transactions = React.createClass({
     componentDidMount() {
         acctService.get(this.props.params.accountid)
         .then((account) => {
-            this.setState({account: account.number});
+            this.setState({account: account});
             this.onRefresh();
         })
         .catch((err) => {
@@ -89,7 +89,7 @@ let Transactions = React.createClass({
                 <form>
                     <Toolbar>
                         <ToolbarGroup float="left">
-                             <ToolbarTitle text={'Account ' + this.state.account.toString()} />
+                             <ToolbarTitle text={this.state.account.name + ' ' + this.state.account.number.toString()} />
                         </ToolbarGroup>
                         <ToolbarGroup float="right">
                             <ToolbarTitle text="Actions" />

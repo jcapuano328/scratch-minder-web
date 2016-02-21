@@ -36,6 +36,7 @@ let AuthService = {
             this.onChange(true, jwtDecode(jwt));
         })
         .catch((err) => {
+            console.error(err);
             this.onChange(false);
         });
     },
