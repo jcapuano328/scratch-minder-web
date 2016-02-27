@@ -28,7 +28,8 @@ module.exports = {
         },
         users: {
             users: '/users',
-            user: '/users/:id'
+            user: '/users/:id',
+            resetpassword: '/users/:id/reset'
         }
     },
     log: {

@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import auth from '../services/AuthService';
 import UrlPattern from 'url-pattern';
-import {BASE_URL, USERS_URL, USER_URL} from '../constants/RESTConstants';
+import {BASE_URL, USERS_URL, USER_URL, PASSWORD_RESET_URL} from '../constants/RESTConstants';
 
 let UsersService = {
     getAll() {
@@ -72,6 +72,30 @@ let UsersService = {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
             }
+        })
+        .then(function(response) {
+            if (response.status != 200) {
+                throw {status: response.status, message: response.statusText};
+            }
+            return response.json();
+        });
+    },
+    resetPassword(user, currentpwd, newpwd, confirmpwd) {
+        let token = auth.getToken();
+        let pattern = new UrlPattern(PASSWORD_RESET_URL);
+        let url = BASE_URL + pattern.stringify({id: user.userid});
+        return fetch(url, {
+            method: 'put',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                currentpwd: currentpwd,
+                newpwd: newpwd,
+                confirmpwd: confirmpwd
+            })
         })
         .then(function(response) {
             if (response.status != 200) {

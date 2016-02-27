@@ -175,5 +175,40 @@ module.exports = [
                 return res.status(err.status || 400).send(err.message || err);
             });
         }
+    },
+    {
+        method: 'put',
+        uri: '/users/:id/reset',
+        protected: true,
+        handler: (req,res,next) => {
+            log.info('Resetting user password ' + req.params.id);
+            let pattern = new UrlPattern(config.services.users.resetpassword);
+            let url = config.services.host + pattern.stringify({id: req.params.id});
+            log.debug('PUT ' + url);
+            return fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
+                },
+                body: JSON.stringify(req.body)
+            })
+            .then((response) => {
+                //log.trace(response.status);
+                if (response.status != 200) {                    
+                    throw {status: response.status, message: response.statusText};
+                }
+                return response.json();
+            })
+            .then((user) => {
+                log.trace('User password reset');
+                res.status(200).send(user);
+            })
+            .catch((err) => {
+                log.error('User password reset failed. ' + err.status + ' ' + err.message);
+                return res.status(err.status || 400).send(err.message || err);
+            });
+        }
     }
 ];

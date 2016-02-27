@@ -19,9 +19,9 @@ describe('Users route', () => {
     });
 
     describe('interface', () => {
-        it('should have a 5 routes', () => {
+        it('should have a 6 routes', () => {
             expect(env.routes).to.be.an.array;
-            expect(env.routes).to.have.length(5);
+            expect(env.routes).to.have.length(6);
         });
         describe('get all users', () => {
             beforeEach(() => {
@@ -108,5 +108,22 @@ describe('Users route', () => {
                 expect(env.route).to.respondTo('handler');
             });
         });
+		describe('reset user password', () => {
+            beforeEach(() => {
+                env.route = env.routes[5];
+            });
+            it('should have a method', () => {
+                expect(env.route).to.have.property('method', 'put');
+            });
+            it('should have a uri', () => {
+                expect(env.route).to.have.property('uri', '/users/:id/reset');
+            });
+            it('should be protected', () => {
+                expect(env.route).to.have.property('protected', true);
+            });
+            it('should have a handler', () => {
+                expect(env.route).to.respondTo('handler');
+            });
+        });		
     });
 });

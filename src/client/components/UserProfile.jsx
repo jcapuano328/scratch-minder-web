@@ -1,7 +1,8 @@
 import React from 'react';
 import { History } from 'react-router'
-import { Paper, SelectField, MenuItem, TextField, IconButton, Snackbar,
+import { Paper, SelectField, MenuItem, TextField, IconButton, FontIcon, Snackbar,
          Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator } from 'material-ui';
+import ConfirmDialog from './ConfirmDialog';
 import auth from '../services/AuthService';
 import userService from '../services/UsersService';
 import acctService from '../services/AccountsService';
@@ -11,12 +12,16 @@ let UserProfile = React.createClass({
 
     getInitialState() {
         return {
-            user: {},
+            user: null,
             first: '',
             last: '',
             email: '',
             accounts: [],
-            preferredAccount: ''
+            preferredAccount: '',
+            showReset: false,
+            errors: {},
+            statusMessage: '',
+            statusMessageDuration: 5000
         };
     },
 
@@ -39,7 +44,7 @@ let UserProfile = React.createClass({
             });
         })
         .catch((err) => {
-            // show the snackbar?
+            this.setState({statusMessage: err.message || err});
             console.error(err);
         });
     },
@@ -57,7 +62,7 @@ let UserProfile = React.createClass({
         this.setState({preferredAccount: v});
     },
     onResetPassword() {
-        console.log('reset password');
+        this.setState({showReset: true});
     },
     onOk(e) {
         // call the service to save the data
@@ -72,7 +77,7 @@ let UserProfile = React.createClass({
         })
         .catch((err) => {
             console.error(err);
-            // show the snack bar?
+            this.setState({statusMessage: err.message || err});
             //this.history.goBack();
         });
     },
@@ -153,7 +158,67 @@ let UserProfile = React.createClass({
                             </SelectField>
                         </div>
                     </div>
+                    <Snackbar
+                      open={!!this.state.statusMessage}
+                      message={this.state.statusMessage}
+                      autoHideDuration={this.state.statusMessageDuration}
+                      onRequestClose={() => {
+                          this.setState({statusMessage: ''});
+                      }}
+                    />
                 </form>
+                <ConfirmDialog ref="resetDlg" open={this.state.showReset}
+                    title='Reset Password'
+                    prompt={(
+                        <div style={{textAlign: 'center'}}>
+                            <TextField
+                                ref='currentpwd'
+                                floatingLabelText='Current Password'
+                                hintText='Enter Current Password'
+                                errorText={this.state.errors.currentpwd}
+                                type='password'/>
+                            <br/>
+                            <TextField
+                                ref='newpwd'
+                                floatingLabelText='New Password'
+                                hintText='Enter New Password'
+                                errorText={this.state.errors.newpwd}
+                                type='password'/>
+                            <br/>
+                            <TextField
+                                ref='confirmpwd'
+                                floatingLabelText='Confirm Password'
+                                hintText='Confirm New Password'
+                                errorText={this.state.errors.confirmpwd}
+                                type='password'/>
+                        </div>
+                    )}
+                    onOk={() => {
+                        let currentpwd = this.refs.currentpwd.getValue();
+                        let newpwd = this.refs.newpwd.getValue();
+                        let confirmpwd = this.refs.confirmpwd.getValue();
+                        let errors = {
+                            currentpwd: (!currentpwd ? 'Current Password is Required' : ''),
+                            newpwd: (!newpwd ? 'New Password is Required' : ''),
+                            confirmpwd: (!confirmpwd ? 'Confirm Password is Required' : (newpwd !== confirmpwd ? 'Confirm Password must match New Password' : ''))
+                        };
+                        if (!currentpwd || !newpwd || !confirmpwd || newpwd !== confirmpwd) {
+                            this.setState({errors: errors});
+                            return;
+                        }
+                        userService.resetPassword(this.state.user, currentpwd, newpwd, confirmpwd)
+                        .then(() => {
+                            this.setState({statusMessage: 'Password Changed', showReset: false, errors: {}});
+                        })
+                        .catch((err) => {
+                            this.setState({statusMessage: 'Password Change Failed'});//err.message || err});
+                            console.error(err);
+                        });
+                    }}
+                    onCancel={() => {
+                        this.setState({showReset: false, errors: {}, statusMessage: ''});
+                    }}
+                />
             </Paper>
         );
     }
