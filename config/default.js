@@ -24,7 +24,8 @@ module.exports = {
         },
         transactions: {
             transactions: '/user/:userid/account/:accountid/transactions',
-            transaction: '/user/:userid/account/:accountid/transactions/:id'
+            transaction: '/user/:userid/account/:accountid/transactions/:id',
+            transactionsearch: '/user/:userid/accounts/:accountid/transactions/search/:kind/:search'
         },
         users: {
             users: '/users',

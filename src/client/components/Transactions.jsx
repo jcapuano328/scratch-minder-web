@@ -41,6 +41,7 @@ let Transactions = React.createClass({
         this.setState({transactions: []});
         return transService.getAll(this.props.params.accountid)
         .then((transactions) => {
+            console.log('Retrieved ' + transactions.length + ' transactions');
             this.setState({
                 transactions: transactions,
                 pagingOffset: 0,//transactions.length - this.state.pagingLimit,

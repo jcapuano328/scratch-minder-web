@@ -1,15 +1,10 @@
 import React from 'react';
 import { History } from 'react-router'
-import { Paper, DatePicker, SelectField, MenuItem, TextField, IconButton, FlatButton, Snackbar,
+import { Paper, DatePicker, SelectField, MenuItem, AutoComplete, TextField, IconButton, FlatButton, Snackbar,
          Toolbar, ToolbarGroup, ToolbarTitle  } from 'material-ui';
 import {FormattedNumber} from 'react-intl';
 import acctService from '../services/AccountsService';
 import transService from '../services/TransactionsService';
-
-//float: 'left',
-let firstItemStyle = {};//{marginLeft: '10%'};
-let itemStyle = {};//{marginLeft: '10px'};
-let balanceStyle = {};//{float: 'right', margin: '1.5em auto'};
 
 let TransactionDetail = React.createClass({
     mixins: [ History ],
@@ -25,7 +20,8 @@ let TransactionDetail = React.createClass({
             type: null,
             amount: null,
             balance: 0,
-            isnew: (this.props.params.transactionId == 'new')
+            isnew: (this.props.params.transactionId == 'new'),
+            descriptionSource: []
         };
     },
 
@@ -61,7 +57,43 @@ let TransactionDetail = React.createClass({
         this.setState({sequence: e.target.value});
     },
     onChangeDescription(e) {
-        this.setState({description: e.target.value});
+        //console.log(e);
+        //this.setState({description: e.target.value});
+        this.setState({description: e});
+        if (e) {
+            transService.search(this.props.params.accountid, 'description', e)
+            .then((data) => {
+                this.setState({
+                    descriptionSource: data.map((txn) => {
+                        //return txn.description + ' - ' + txn.category + ' - ' + txn.amount;
+                        //console.log(txn.description);
+                        return {
+                            text: txn.description,
+                            value: (
+                                <MenuItem
+                                    primaryText={txn.description}
+                                    secondaryText={txn.amount}
+                                />
+                            ),
+                            txn: txn
+                        };
+                    })
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+        }
+    },
+    onSelectDescription(t,i,d) {
+        console.log(t);
+        let txn = d[i].txn;
+        this.setState({
+            description: txn.description,
+            category: txn.category,
+            type: txn.type,
+            amount: txn.amount
+        });
     },
     onChangeCategory(e) {
         this.setState({category: e.target.value});
@@ -99,10 +131,6 @@ let TransactionDetail = React.createClass({
     },
 
     render() {
-        /*
-        className={this.state.type!=='debit' ? '' : 'hidden'}
-        disabled={this.state.type!=='debit'}
-        */
         return (
             <Paper
                 style={{
@@ -115,13 +143,11 @@ let TransactionDetail = React.createClass({
                 <form>
                     <Toolbar>
                         <ToolbarGroup float="left">
-                             <ToolbarTitle text={'Account ' + this.state.account}/>
+                            <ToolbarTitle text={(this.state.isnew ? 'Add' : 'Modify') + ' Transaction'}/>
                         </ToolbarGroup>
-                        <ToolbarGroup float="left" style={{top: '32%', left: '20%', color: 'green'}}>
-                             <FormattedNumber
-                                 floatingLabelText='Balance'
-                                 hintText='Current balance'
-                                 value={this.state.balance} format="USD" />
+                        <ToolbarGroup float="left" style={{top: '32%', left: '10%'}}>
+                            <label>{'Account ' + this.state.account}</label>
+                            <span style={{paddingLeft: '0.5em', color: 'green'}}><FormattedNumber value={this.state.balance} format="USD" /></span>
                         </ToolbarGroup>
                         <ToolbarGroup float="right">
                             <IconButton
@@ -141,14 +167,12 @@ let TransactionDetail = React.createClass({
                     <div style={{textAlign: 'center'}}>
                         <div>
                             <DatePicker value={new Date(this.state.when)} autoOk={true}
-                                style={firstItemStyle}
                                 floatingLabelText="Date"
                                 hintText='Date of transaction'
                                 onChange={this.onChangeDate} />
                         </div>
                         <div>
                             <SelectField value={this.state.type}
-                                style={itemStyle}
                                 onChange={this.onChangeType}
                                 floatingLabelText="Type"
                                 hintText='Type of transaction'>
@@ -159,28 +183,27 @@ let TransactionDetail = React.createClass({
                         </div>
                         <div>
                             <TextField value={this.state.sequence}
-                                style={firstItemStyle}
                                 onChange={this.onChangeSequence}
                                 floatingLabelText="Sequence"
                                 hintText='Next number in sequence'/>
                         </div>
                         <div>
-                            <TextField value={this.state.description}
-                                style={itemStyle}
-                                onChange={this.onChangeDescription}
+                            <AutoComplete
+                                value={this.state.description}
+                                onNewRequest={this.onSelectDescription}
+                                onUpdateInput={this.onChangeDescription}
+                                dataSource={this.state.descriptionSource}
                                 floatingLabelText="Description"
                                 hintText='Description of transaction'/>
                         </div>
                         <div>
                             <TextField value={this.state.category}
-                                style={itemStyle}
                                 onChange={this.onChangeCategory}
                                 floatingLabelText="Category"
                                 hintText='Category of transaction'/>
                         </div>
                         <div style={{marginBottom: 25}}>
                             <TextField value={this.state.amount}
-                                style={itemStyle}
                                 onChange={this.onChangeAmount}
                                 floatingLabelText="Amount"
                                 hintText='Transaction amount'/>

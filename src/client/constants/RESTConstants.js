@@ -7,9 +7,10 @@ module.exports = {
   LOGOUT_URL: BASE_URL + '/logout',
   USERS_URL: '/users',
   USER_URL:'/users/:id',
-  PASSWORD_RESET_URL:'/users/:id/reset',  
+  PASSWORD_RESET_URL:'/users/:id/reset',
   ACCOUNTS_URL: '/accounts',
   ACCOUNT_URL:'/accounts/:id',
   TRANSACTIONS_URL: '/accounts/:id/transactions',
-  TRANSACTION_URL: '/accounts/:id/transactions/:transactionid'
+  TRANSACTION_URL: '/accounts/:id/transactions/:transactionid',
+  TRANSACTIONS_SEARCH_URL: '/accounts/:id/transactions/search/:kind/:search'
 };
