@@ -22,7 +22,9 @@ let Transactions = React.createClass({
             pagingTotal: 0,
             pagingLimit: 5,
             selectedTransaction: null,
-            showConfirm: false
+            showConfirm: false,
+            statusMessage: '',
+            statusMessageDuration: 5000
         };
     },
     componentDidMount() {
@@ -32,7 +34,7 @@ let Transactions = React.createClass({
             this.onRefresh();
         })
         .catch((err) => {
-            // show the snackbar?
+            this.setState({statusMessage: err.message || err});
             console.error(err);
         });
     },
@@ -49,7 +51,7 @@ let Transactions = React.createClass({
             });
         })
         .catch((err) => {
-            // show the snackbar?
+            this.setState({statusMessage: err.message || err});
             console.error(err);
         });
     },
@@ -139,6 +141,14 @@ let Transactions = React.createClass({
                         </TableBody>
                         <Pager offset={this.state.pagingOffset} total={this.state.pagingTotal} limit={this.state.pagingLimit} onPageClick={this.onPageClick}/>
                     </Table>
+                    <Snackbar
+                      open={!!this.state.statusMessage}
+                      message={this.state.statusMessage}
+                      autoHideDuration={this.state.statusMessageDuration}
+                      onRequestClose={() => {
+                          this.setState({statusMessage: ''});
+                      }}
+                    />
                 </form>
                 <ConfirmDialog ref="confirmDlg" open={this.state.showConfirm} title={'Delete Transaction?'}
                     prompt={this.confirmPrompt(this.state.selectedTransaction)}
@@ -162,9 +172,8 @@ let Transactions = React.createClass({
                             this.onRefresh();
                         })
                         .catch((err) => {
-                            // show the snackbar?
-                            console.error(err);
-                            this.setState({showConfirm: false});
+                            this.setState({showConfirm: false, statusMessage: err.message || err});
+                            console.error(err);                        
                         });
                     }}
                     onCancel={() => {

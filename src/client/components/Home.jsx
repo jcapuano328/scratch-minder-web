@@ -9,7 +9,9 @@ let Home = React.createClass({
     getInitialState() {
         return {
             loggedIn: auth.loggedIn(),
-            user: null
+            user: null,
+            statusMessage: '',
+            statusMessageDuration: 5000
         };
     },
 
@@ -29,7 +31,8 @@ let Home = React.createClass({
                 this.setState({user: user});
             })
             .catch((err) => {
-
+                this.setState({statusMessage: err.message || err});
+                console.error(err);
             });
         }
     },
@@ -41,6 +44,14 @@ let Home = React.createClass({
                 <p>
                     Please <Link to="/login">Sign in</Link> or <Link to="/signup">Sign up</Link> to get started!
                 </p>
+                <Snackbar
+                  open={!!this.state.statusMessage}
+                  message={this.state.statusMessage}
+                  autoHideDuration={this.state.statusMessageDuration}
+                  onRequestClose={() => {
+                      this.setState({statusMessage: ''});
+                  }}
+                />
             </div>
         );
     },

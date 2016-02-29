@@ -10,7 +10,9 @@ let Login = React.createClass({
         return {
             user: '',
             password: '',
-            loggedIn: Auth.loggedIn()
+            loggedIn: Auth.loggedIn(),
+            statusMessage: '',
+            statusMessageDuration: 5000
         }
     },
 
@@ -34,7 +36,7 @@ let Login = React.createClass({
             this.history.replaceState(null, '/');
         })
         .catch(function(err) {
-            alert("There's an error logging in");
+            this.setState({statusMessage: err.message || err});
             console.log("Error logging in", err);
         });
     },
@@ -76,6 +78,14 @@ let Login = React.createClass({
                     >
                         <RaisedButton type='submit' label="Sign In" primary={true} />
                     </div>
+                    <Snackbar
+                      open={!!this.state.statusMessage}
+                      message={this.state.statusMessage}
+                      autoHideDuration={this.state.statusMessageDuration}
+                      onRequestClose={() => {
+                          this.setState({statusMessage: ''});
+                      }}
+                    />
                 </form>
             </Paper>
         );

@@ -21,7 +21,9 @@ let TransactionDetail = React.createClass({
             amount: null,
             balance: 0,
             isnew: (this.props.params.transactionId == 'new'),
-            descriptionSource: []
+            descriptionSource: [],
+            statusMessage: '',
+            statusMessageDuration: 5000
         };
     },
 
@@ -45,7 +47,7 @@ let TransactionDetail = React.createClass({
             });
         })
         .catch((err) => {
-            // show the snackbar?
+            this.setState({statusMessage: err.message || err});
             console.error(err);
         });
     },
@@ -81,6 +83,7 @@ let TransactionDetail = React.createClass({
                 });
             })
             .catch((err) => {
+                this.setState({statusMessage: err.message || err});
                 console.error(err);
             });
         }
@@ -121,8 +124,8 @@ let TransactionDetail = React.createClass({
             this.history.goBack();
         })
         .catch((err) => {
-            console.error(err);
-            // show the snack bar?
+            this.setState({statusMessage: err.message || err});
+            console.error(err);            
             //this.history.goBack();
         });
     },
@@ -209,6 +212,14 @@ let TransactionDetail = React.createClass({
                                 hintText='Transaction amount'/>
                         </div>
                     </div>
+                    <Snackbar
+                      open={!!this.state.statusMessage}
+                      message={this.state.statusMessage}
+                      autoHideDuration={this.state.statusMessageDuration}
+                      onRequestClose={() => {
+                          this.setState({statusMessage: ''});
+                      }}
+                    />
                 </form>
             </Paper>
         );
