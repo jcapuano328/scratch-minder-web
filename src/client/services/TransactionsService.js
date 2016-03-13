@@ -1,7 +1,15 @@
 import fetch from 'node-fetch';
 import UrlPattern from 'url-pattern';
 import auth from '../services/AuthService';
-import {BASE_URL, TRANSACTIONS_URL,TRANSACTION_URL, TRANSACTIONS_SEARCH_URL} from '../constants/RESTConstants';
+import {BASE_URL, TRANSACTIONS_URL, TRANSACTION_URL, TRANSACTIONS_SEARCH_URL, TRANSACTIONS_SUMMARY_URL} from '../constants/RESTConstants';
+var _ = require('lodash');
+
+let toJson = (response) => {
+    if (response.status != 200) {
+        throw {status: response.status, message: response.statusText};
+    }
+    return response.json();
+};
 
 let TransactionsService = {
     getAll(accountid) {
@@ -17,12 +25,7 @@ let TransactionsService = {
                 'Authorization': 'Bearer ' + token
             }
         })
-        .then(function(response) {
-            if (response.status != 200) {
-                throw {status: response.status, message: response.statusText};
-            }
-            return response.json();
-        });
+        .then(toJson);
     },
     get(accountid, transactionid) {
         let token = auth.getToken();
@@ -37,12 +40,7 @@ let TransactionsService = {
                 'Authorization': 'Bearer ' + token
             }
         })
-        .then(function(response) {
-            if (response.status != 200) {
-                throw {status: response.status, message: response.statusText};
-            }
-            return response.json();
-        });
+        .then(toJson);
     },
     save(accountid, transaction, isnew) {
         let token = auth.getToken();
@@ -58,7 +56,7 @@ let TransactionsService = {
             },
             body: JSON.stringify(transaction)
         })
-        .then(function(response) {
+        .then((response) => {
             if (response.status != 200 && response.status != 201) {
                 throw {status: response.status, message: response.statusText};
             }
@@ -77,12 +75,7 @@ let TransactionsService = {
                 'Authorization': 'Bearer ' + token
             }
         })
-        .then(function(response) {
-            if (response.status != 200) {
-                throw {status: response.status, message: response.statusText};
-            }
-            return response.json();
-        });
+        .then(toJson);
     },
     search(accountid, kindof, searchtxt) {
         let token = auth.getToken();
@@ -96,11 +89,37 @@ let TransactionsService = {
                 'Authorization': 'Bearer ' + token
             }
         })
-        .then(function(response) {
-            if (response.status != 200) {
-                throw {status: response.status, message: response.statusText};
+        .then(toJson);
+    },
+    summary(accountid, startdate, enddate, groupby) {
+        let token = auth.getToken();
+        let pattern = new UrlPattern(TRANSACTIONS_SUMMARY_URL);
+        let url = BASE_URL + pattern.stringify({id: accountid, startdate: startdate.toISOString(), enddate: enddate.toISOString()});
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
             }
-            return response.json();
+        })
+        .then(toJson)
+        .then((data) => {
+            let o = {
+                transactions: data
+            };
+            if (groupby) {
+                let g = _.groupBy(data, groupby);
+                o.summary = _.map(g, (v,k) => {
+                    let s = {};
+                    s[groupby] = k;
+                    s.total = _.reduce(v, (sum, n) => {
+                        return sum + parseFloat(n.amount);
+                    }, 0);
+                    return s;
+                });
+            }
+            return o;
         });
     }
 };

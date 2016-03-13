@@ -213,5 +213,42 @@ module.exports = [
                 return res.status(err.status || 400).send(err.message || err);
             });
         }
+    },
+
+    {
+        method: 'get',
+        uri: '/accounts/:accountid/transactions/startdate/:startdate/enddate/:enddate',
+        protected: true,
+        handler: (req,res,next) => {
+            log.info('Retrieving transactions for ' + req.user.user.username + ' account ' + req.params.accountid + ' from ' + req.params.startdate + '-' + req.params.enddate);
+            let pattern = new UrlPattern(config.services.transactions.transactionssummary);
+            let url = config.services.host + pattern.stringify({userid: req.user.user.userid, accountid: req.params.accountid, startdate: req.params.startdate, enddate: req.params.enddate});
+            log.debug('GET ' + url);
+            return fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + req.user.token
+                }
+            })
+            .then((response) => {
+                //log.trace(response.status);
+                if (response.status != 200) {
+                    throw {status: response.status, message: response.statusText};
+                }
+                return response.json();
+            })
+            .then((transactions) => {
+                transactions = transactions || [];
+                log.trace(transactions.length + ' transactions retrieved');
+                res.status(200).send(transactions);
+            })
+            .catch((err) => {
+                log.error('Transactions retrieval for ' + req.user.user.username + ' failed. ' + err.status + ' ' + err.message);
+                return res.status(err.status || 400).send(err.message || err);
+            });
+        }
     }
+
 ];

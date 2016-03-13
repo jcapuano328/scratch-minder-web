@@ -20,7 +20,7 @@ describe('Transactions route', () => {
 				transactions: {
 					transactions: '/users/:userid/path/to/account/:accountid/transactions',
 					transaction: '/users/:userid/path/to/account/:accountid/transactions/:id',
-					transactionsearch: '/users/:userid/path/to/account/:accountid/transactions/search/:kind/:search'				
+					transactionsearch: '/users/:userid/path/to/account/:accountid/transactions/search/:kind/:search'
 				}
 			}
 		};
@@ -51,9 +51,9 @@ describe('Transactions route', () => {
     });
 
     describe('interface', () => {
-        it('should have a 6 routes', () => {
+        it('should have a 7 routes', () => {
             expect(env.routes).to.be.an.array;
-            expect(env.routes).to.have.length(6);
+            expect(env.routes).to.have.length(7);
         });
         describe('get all transactions for an account', () => {
             beforeEach(() => {
@@ -140,7 +140,6 @@ describe('Transactions route', () => {
                 expect(env.route).to.respondTo('handler');
             });
         });
-
 		describe('search transactions', () => {
             beforeEach(() => {
                 env.route = env.routes[5];
@@ -150,6 +149,23 @@ describe('Transactions route', () => {
             });
             it('should have a uri', () => {
                 expect(env.route).to.have.property('uri', '/accounts/:accountid/transactions/search/:kind/:search');
+            });
+            it('should be protected', () => {
+                expect(env.route).to.have.property('protected', true);
+            });
+            it('should have a handler', () => {
+                expect(env.route).to.respondTo('handler');
+            });
+        });
+		describe('transactions range', () => {
+            beforeEach(() => {
+                env.route = env.routes[6];
+            });
+            it('should have a method', () => {
+                expect(env.route).to.have.property('method', 'get');
+            });
+            it('should have a uri', () => {
+                expect(env.route).to.have.property('uri', '/accounts/:accountid/transactions/startdate/:startdate/enddate/:enddate');
             });
             it('should be protected', () => {
                 expect(env.route).to.have.property('protected', true);

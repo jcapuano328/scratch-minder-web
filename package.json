@@ -58,7 +58,8 @@
     "react-router": "^1.0.3",
     "react-tap-event-plugin": "^0.2.1",
     "scratch-minder-nub": "git+https://github.com/jcapuano328/scratch-minder-nub.git",
-    "url-pattern": "^1.0.1"
+    "url-pattern": "^1.0.1",
+    "victory": "^0.4.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",

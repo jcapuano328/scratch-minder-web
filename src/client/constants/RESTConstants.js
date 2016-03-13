@@ -12,5 +12,6 @@ module.exports = {
   ACCOUNT_URL:'/accounts/:id',
   TRANSACTIONS_URL: '/accounts/:id/transactions',
   TRANSACTION_URL: '/accounts/:id/transactions/:transactionid',
-  TRANSACTIONS_SEARCH_URL: '/accounts/:id/transactions/search/:kind/:search'
+  TRANSACTIONS_SEARCH_URL: '/accounts/:id/transactions/search/:kind/:search',
+  TRANSACTIONS_SUMMARY_URL: '/accounts/:id/transactions/startdate/:startdate/enddate/:enddate'
 };
