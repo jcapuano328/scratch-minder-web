@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, History } from 'react-router';
 import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, DropDownMenu, MenuItem, Snackbar } from 'material-ui';
+import {FormattedNumber} from 'react-intl';
 import AccountsChart from './AccountsChart'
 import TransactionsByCategoryChart from './TransactionsByCategoryChart'
 import AccountBalanceHistoryChart from './AccountBalanceHistoryChart'
@@ -116,6 +117,38 @@ let Home = React.createClass({
             </div>
         );
     },
+    chartHeader() {
+        return (
+            <div style={{/*textAlign: 'center'*/}}>
+                {
+                    this.state.account ? (
+                        <span>
+                            <label style={{
+                                //backgroundColor: '#ccc',
+                                //fill: '#756f6a',
+                                //stroke: 'transparent',
+                                //paddingLeft: 125,
+                                //color: '#756f6a',
+                                //margin: '0em auto',
+                                paddingLeft: '25%',
+                                whiteSpace: 'inherit',
+                                fontWeight: 'bold',
+                                fontSize: 18,
+                                fontFamily: 'Helvetica'
+                            }}>
+                                <i>{this.state.account.name + ' ' + this.state.account.number}</i>
+                            </label>
+                            <span style={{paddingLeft: '0.5em', fontSize: 18,fontFamily: 'Helvetica', color: 'green'}}>
+                                <FormattedNumber value={this.state.account.balance} format="USD" />
+                            </span>
+                        </span>
+                    ) : (
+                        <span/>
+                    )
+                }
+            </div>
+        );
+    },
     homeView() {
         return (
             <div>
@@ -123,6 +156,12 @@ let Home = React.createClass({
                     <ToolbarGroup float="left">
                          <ToolbarTitle text={'Accounts'} />
                     </ToolbarGroup>
+
+                    <ToolbarGroup float="left" style={{top: '32%', left: '30%'}}>
+                        <label><i>{this.state.account ? (this.state.account.name + ' ' + this.state.account.number) : ''}</i></label>
+                        <span style={{paddingLeft: '0.5em', color: 'green'}}><FormattedNumber value={this.state.account ? this.state.account.balance : ''} format="USD" /></span>
+                    </ToolbarGroup>
+
                     <ToolbarGroup float="right">
                         <ToolbarTitle text="Last" />
                         <DropDownMenu value={this.state.range}
@@ -152,6 +191,7 @@ let Home = React.createClass({
                     <AccountsChart data={this.state.accounts} onSelected={this.onAccountSelected} onGoTo={this.onGoTo}/>
                 </section>
                 <section style={{float: 'left', width: '75%', height: '100%'}}>
+                    {/*this.chartHeader()*/}
                     <TransactionsByCategoryChart data={this.state.transactionSummary.summary} />
                     <AccountBalanceHistoryChart data={this.state.transactionSummary.transactions} />
                 </section>
