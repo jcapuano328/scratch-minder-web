@@ -21,6 +21,7 @@ Web Client for scratch-minder
 - reactjs https://facebook.github.io/react/
 - flux https://facebook.github.io/flux/docs/overview.html
 - material-ui http://www.material-ui.com/
+- charts http://victory.formidable.com/docs/
 - config https://github.com/lorenwest/node-config
 
 https://nodejs.org/en/docs/es6/

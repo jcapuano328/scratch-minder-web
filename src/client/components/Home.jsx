@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, History } from 'react-router';
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, DropDownMenu, MenuItem, Snackbar } from 'material-ui';
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle, DropDownMenu, MenuItem, IconButton, Snackbar } from 'material-ui';
 import {FormattedNumber} from 'react-intl';
 import AccountsChart from './AccountsChart'
 import TransactionsByCategoryChart from './TransactionsByCategoryChart'
@@ -53,17 +53,7 @@ let Home = React.createClass({
 
     componentWillMount() {
         if (this.state.loggedIn) {
-            return acctService.getAll()
-            .then((data) => {
-                this.setState({accounts: data});
-                if (data.length > 0) {
-                    this.onAccountSelected(data[0]);
-                }
-            })
-            .catch((err) => {
-                this.setState({statusMessage: err.message || err});
-                console.error(err);
-            });
+            this.onRefresh();
         }
     },
 
@@ -104,6 +94,19 @@ let Home = React.createClass({
         console.log('range unit ' + v);
         this.setState({rangeUnit: v}, () => {
             this.refreshDetails();
+        });
+    },
+    onRefresh() {
+        acctService.getAll()
+        .then((data) => {
+            this.setState({accounts: data});
+            if (data.length > 0) {
+                this.onAccountSelected(data[0]);
+            }
+        })
+        .catch((err) => {
+            this.setState({statusMessage: err.message || err});
+            console.error(err);
         });
     },
 
@@ -156,12 +159,10 @@ let Home = React.createClass({
                     <ToolbarGroup float="left">
                          <ToolbarTitle text={'Accounts'} />
                     </ToolbarGroup>
-
                     <ToolbarGroup float="left" style={{top: '32%', left: '30%'}}>
                         <label><i>{this.state.account ? (this.state.account.name + ' ' + this.state.account.number) : ''}</i></label>
                         <span style={{paddingLeft: '0.5em', color: 'green'}}><FormattedNumber value={this.state.account ? this.state.account.balance : ''} format="USD" /></span>
                     </ToolbarGroup>
-
                     <ToolbarGroup float="right">
                         <ToolbarTitle text="Last" />
                         <DropDownMenu value={this.state.range}
@@ -185,6 +186,12 @@ let Home = React.createClass({
                             <MenuItem key={2} value={'months'} primaryText={'Months'}/>
                             <MenuItem key={3} value={'years'} primaryText={'Years'}/>
                         </DropDownMenu>
+                        <IconButton
+                            tooltip='Refresh'
+                            tooltipPosition='top-left'
+                            iconClassName='fa fa-refresh'
+                            onTouchTap={this.onRefresh}
+                        />
                     </ToolbarGroup>
                 </Toolbar>
                 <section style={{float: 'left', width: '25%', height: '100%'}}>

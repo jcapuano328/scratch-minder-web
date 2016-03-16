@@ -39,12 +39,14 @@ let AccountsChart = React.createClass({
                         colors={ colors }
                         horizontal={ true }
                         width={'95%'}
+                        clickLabel={'Update charts'}
                         onClick={(e,s,i) => {
                             // load the chart data for this account
                             let account = this.props.data[s];
                             console.log(account.name + ' ' + account.number);
                             this.props.onSelected && this.props.onSelected(account);
                         }}
+                        selectLabel={'View Transactions'}
                         onSelected={(e,s) => {
                             // go to transactions
                             let account = this.props.data[s];

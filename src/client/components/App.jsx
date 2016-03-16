@@ -14,6 +14,7 @@ let AppBar = mui.AppBar,
     IconButton = mui.IconButton,
     LeftNav = mui.LeftNav,
     MenuItem = mui.MenuItem,
+    FontIcon = mui.FontIcon,
     Divider = mui.Divider;
 
 
@@ -102,9 +103,9 @@ let App = React.createClass({
                                 targetOrigin={{horizontal: 'right', vertical: 'top'}}
                                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}
                             >
-                                <MenuItem onTouchTap={this.handleMenu('/userprofile')}>Profile</MenuItem>
+                                <MenuItem onTouchTap={this.handleMenu('/userprofile')} leftIcon={<FontIcon className="fa fa-user"/>}>Profile</MenuItem>
                                 <Divider />
-                                <MenuItem onTouchTap={this.handleMenu('/logout')}>Sign Out</MenuItem>
+                                <MenuItem onTouchTap={this.handleMenu('/logout')} leftIcon={<FontIcon className="fa fa-sign-out"/>}>Sign Out</MenuItem>
                             </IconMenu>
                         ) : (
                             <IconButton
@@ -129,15 +130,15 @@ let App = React.createClass({
                               open={this.state.open}
                           >
                               {this.menuAppBar()}
-                              <MenuItem onTouchTap={this.handleMenu('/')}>Home</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/')} leftIcon={<FontIcon className="fa fa-home"/>}>Home</MenuItem>
                               <Divider />
-                              <MenuItem onTouchTap={this.handleMenu('/accounts')}>Accounts</MenuItem>
-                              <MenuItem onTouchTap={this.handleMenu('/users')}>Users</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/accounts')} leftIcon={<FontIcon className="fa fa-bank"/>}>Accounts</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/users')} leftIcon={<FontIcon className="fa fa-users"/>}>Users</MenuItem>
                               <Divider />
-                              <MenuItem onTouchTap={this.handleMenu('/userprofile')}>Profile</MenuItem>
-                              <MenuItem onTouchTap={this.handleMenu('/about')}>About</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/userprofile')} leftIcon={<FontIcon className="fa fa-user"/>}>Profile</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/about')} leftIcon={<FontIcon className="fa fa-question-circle"/>}>About</MenuItem>
                               <Divider />
-                              <MenuItem onTouchTap={this.handleMenu('/logout')}>Sign Out</MenuItem>
+                              <MenuItem onTouchTap={this.handleMenu('/logout')} leftIcon={<FontIcon className="fa fa-sign-out"/>}>Sign Out</MenuItem>
                           </LeftNav>
                       )}
 

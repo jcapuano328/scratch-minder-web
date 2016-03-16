@@ -63,16 +63,16 @@ var Charts = React.createClass({
                         width: self.props.width ? self.props.width: 'auto'}}
             >
             <IconButton
-                tooltip='Go To'
-                tooltipPosition='top-left'
+                tooltip={self.props.selectLabel || 'Go To'}
+                tooltipPosition='top-right'
                 iconClassName='fa fa-arrow-circle-right'
                 onTouchTap={(e) => {
                     self.props.onSelected && self.props.onSelected(e, serieIndex);
                 }}
             />
             <IconButton
-                tooltip='Charts'
-                tooltipPosition='top-left'
+                tooltip={self.props.clickLabel || 'Charts'}
+                tooltipPosition='top-right'
                 iconClassName='fa fa-pie-chart'
                 onTouchTap={(e) => {
                     self.props.onClick && self.props.onClick(e, serieIndex);
