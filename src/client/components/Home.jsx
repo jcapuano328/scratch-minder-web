@@ -6,6 +6,7 @@ import AccountsChart from './AccountsChart'
 import TransactionsByCategoryChart from './TransactionsByCategoryChart'
 import AccountBalanceHistoryChart from './AccountBalanceHistoryChart'
 import auth from '../services/AuthService';
+import usersService from '../services/UsersService';
 import acctService from '../services/AccountsService';
 import transService from '../services/TransactionsService';
 import _ from 'lodash';
@@ -53,7 +54,19 @@ let Home = React.createClass({
 
     componentWillMount() {
         if (this.state.loggedIn) {
-            this.onRefresh();
+            let usr = auth.getUser().user;
+            return usersService.get(usr.userid)
+            .then((user) => {
+                if (user.homeView == 'transactions' && user.preferredAccount) {
+                    this.history.replaceState(null, '/account/' + user.preferredAccount + '/transactions');
+                } else {
+                    this.onRefresh();
+                }
+            })
+            .catch((err) => {
+                this.setState({statusMessage: err.message || err});
+                console.error(err);
+            });
         }
     },
 

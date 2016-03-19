@@ -1,6 +1,6 @@
 import React from 'react';
 import { History } from 'react-router'
-import { Paper, SelectField, MenuItem, TextField, IconButton, FontIcon, Snackbar,
+import { Paper, SelectField, MenuItem, TextField, RadioButtonGroup, RadioButton, Divider, IconButton, FontIcon, Snackbar,
          Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator } from 'material-ui';
 import ConfirmDialog from './ConfirmDialog';
 import auth from '../services/AuthService';
@@ -16,6 +16,7 @@ let UserProfile = React.createClass({
             first: '',
             last: '',
             email: '',
+            homeView: '',
             accounts: [],
             preferredAccount: '',
             showReset: false,
@@ -34,7 +35,8 @@ let UserProfile = React.createClass({
                 first: user.firstname,
                 last: user.lastname,
                 email: user.email,
-                preferredAccount: user.preferredAccount
+                preferredAccount: user.preferredAccount,
+                homeView: user.homeView || 'summary'
             });
             return acctService.getAll();
         })
@@ -61,6 +63,9 @@ let UserProfile = React.createClass({
     onChangePreferred(e,i,v) {
         this.setState({preferredAccount: v});
     },
+    onChangeHomeView(e,v) {
+        this.setState({homeView: v});
+    },
     onResetPassword() {
         this.setState({showReset: true});
     },
@@ -70,6 +75,7 @@ let UserProfile = React.createClass({
         this.state.user.lastname = this.state.last;
         this.state.user.email = this.state.email;
         this.state.user.preferredAccount = this.state.preferredAccount;
+        this.state.user.homeView = this.state.homeView;
 
         userService.save(this.state.user)
         .then(() => {
@@ -145,7 +151,7 @@ let UserProfile = React.createClass({
                                 floatingLabelText="Email Address"
                                 hintText='User Email Address'/>
                         </div>
-                        <div style={{marginBottom: 25}}>
+                        <div>
                             <SelectField value={this.state.preferredAccount}
                                 onChange={this.onChangePreferred}
                                 floatingLabelText="Preferred Account"
@@ -156,6 +162,29 @@ let UserProfile = React.createClass({
                                     );
                                 })}
                             </SelectField>
+                        </div>
+                        <div style={{marginLeft: '32%', marginTop: 15, marginBottom: 110}}>
+                            <section style={{float: 'left'}}>
+                                <label>Home View</label>
+                            </section>
+                            <section style={{float: 'left'}}>
+                                <RadioButtonGroup name="homeView"
+                                    style={{maxWidth: 250}}                                    
+                                    valueSelected={this.state.homeView}
+                                    onChange={this.onChangeHomeView}
+                                >
+                                  <RadioButton
+                                    value="summary"
+                                    label="Summary"
+                                    style={{marginBottom: 16}}
+                                  />
+                                  <RadioButton
+                                    value="transactions"
+                                    label="Transactions"
+                                    style={{marginBottom: 16}}
+                                  />
+                                </RadioButtonGroup>
+                            </section>
                         </div>
                     </div>
                     <Snackbar
