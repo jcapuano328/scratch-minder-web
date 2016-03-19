@@ -1,6 +1,6 @@
 import React from 'react';
 import { History } from 'react-router'
-import { Paper, TextField, RaisedButton } from 'material-ui';
+import { Paper, TextField, RaisedButton, Snackbar } from 'material-ui';
 import Auth from '../services/AuthService'
 
 let Login = React.createClass({
@@ -27,17 +27,19 @@ let Login = React.createClass({
     },
 
     login(e) {
+        let self = this;
         e.preventDefault();
         let user = this.refs.user.getValue();
         let pass = this.refs.pass.getValue();
 
         Auth.login(user, pass)
         .then(() => {
-            this.history.replaceState(null, '/');
+            self.history.replaceState(null, '/');
         })
         .catch(function(err) {
-            this.setState({statusMessage: err.message || err});
-            console.log("Error logging in", err);
+            let msg = 'Logon Error: ' + (err.message || err);
+            self.setState({statusMessage: msg});
+            console.error(msg, err);
         });
     },
 
@@ -58,7 +60,7 @@ let Login = React.createClass({
                     <div>
                         <TextField
                           ref="user"
-                          hintText="Username Field"
+                          hintText="Enter Username"
                           floatingLabelText="Username"
                           type="text" />
                     </div>
@@ -66,7 +68,7 @@ let Login = React.createClass({
                     <div>
                         <TextField
                           ref="pass"
-                          hintText="Password Field"
+                          hintText="Enter Password"
                           floatingLabelText="Password"
                           type="password" />
                     </div>

@@ -32,12 +32,17 @@ let AuthService = {
             }));
         })
         .then((jwt) => {
+            if (jwt == 'Unauthorized') {
+                throw jwt;
+            }
             localStorage.setItem('jwt', jwt);
             this.onChange(true, jwtDecode(jwt));
         })
         .catch((err) => {
-            console.error(err);
+            //console.error(err);
+            localStorage.removeItem('jwt');
             this.onChange(false);
+            throw err;
         });
     },
 
@@ -66,7 +71,8 @@ let AuthService = {
     },*/
 
     getToken() {
-        return localStorage.getItem('jwt');
+        var token = localStorage.getItem('jwt');
+        return token && token != 'Unauthorized' ? token : null;
     },
 
     getUser() {
